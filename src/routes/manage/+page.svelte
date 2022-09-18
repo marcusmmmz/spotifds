@@ -97,7 +97,7 @@
 </script>
 
 <h2>Manage your music</h2>
-<div class="uploadedSongContent">
+<div class="container">
 	<h2>Upload a music file</h2>
 	<form on:submit|preventDefault={onSubmit} class="music-upload-container">
 		<label>
@@ -146,10 +146,14 @@
 </div>
 
 <style>
-	.uploadedSongContent {
+	.container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+
+		background-color: #444444;
+		height: 75%;
+		padding: 12px 12px;
 	}
 
 	.music-upload-container {
@@ -159,11 +163,11 @@
 		align-items: center;
 	}
 
-	.uploadedSongContent label {
+	label {
 		font-size: 24px;
 	}
 
-	.uploadedSongContent input[type="text"] {
+	input[type="text"] {
 		padding: 12px 12px;
 		border-radius: 3%;
 		border: none;
@@ -173,7 +177,7 @@
 		color: #ffffff;
 	}
 
-	.uploadedSongContent button {
+	button {
 		padding: 12px 12px;
 		outline: none;
 		border: none;
@@ -181,7 +185,7 @@
 		color: white;
 	}
 
-	.uploadedSongContent input[type="file"] {
+	input[type="file"] {
 		margin-top: 15px;
 		margin-bottom: 15px;
 	}

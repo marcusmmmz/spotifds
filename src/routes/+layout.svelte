@@ -20,11 +20,38 @@
 	<title>Spotifds</title>
 </svelte:head>
 
-<div class="blurPanel">
-	<LeftPanel />
-	<div class="mainFds">
-		<slot />
+<div class="container">
+	<div class="blurPanel">
+		<LeftPanel />
+		<div class="mainFds">
+			<slot />
+		</div>
 	</div>
+
+	<PlayerBar />
 </div>
 
-<PlayerBar />
+<style>
+	.container {
+		display: grid;
+		flex-direction: column;
+		grid-template-rows: 6fr 1fr;
+		height: 100%;
+	}
+
+	.blurPanel {
+		width: 100%;
+		min-height: 100%;
+		backdrop-filter: blur(12px);
+
+		display: flex;
+	}
+
+	.mainFds {
+		width: 75%;
+		height: 95%;
+		padding: 25px 25px;
+		background-color: rgba(54, 54, 54);
+		border-left: 1px solid rgba(32, 32, 32);
+	}
+</style>

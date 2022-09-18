@@ -1,89 +1,16 @@
-
 body {   
     background-image: url("https://wallpapercave.com/dwp1x/wp5156508.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
     color: white;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
 
     font-family: Arial, Helvetica, sans-serif;
 }
 
 html, body {
     margin: 0;
-    margin-top: -10px;
     width: 100%;
     height: 100%;
-}
-
-.blurPanel {
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(12px);
-}
-
-.blurPanel {
-    display: flex;
-}
-
-.mainFds {
-    width: 75%;
-    height: 95%;
-    padding: 25px 25px;
-    background-color: rgba(54, 54, 54);
-    border-left: 1px solid rgba(32, 32, 32);
-}
-
-.uploadedSongContent {
-    background-color: #444444;
-    width: 98%;
-    height: 75%;
-    border-radius: 10px;
-    padding: 12px 12px;
-}
-
-ul, li {
-    list-style-type: none;
-    color: rgb(202, 202, 202);
-    transition: 0.3s;
-}
-
-.menuSelector {
-    display: flex;
-    flex-direction: column;
-}
-
-.menuSelector a {
-    text-decoration: none;
-    font-size: 22px;
-    color: #ffffff;
-    transition: 0.3s;
-    padding: 8px 8px;
-}
-
-.menuSelector a:hover {
-    transition: 0.3s;
-    background-color: rgba(255, 255, 255, 0.300);
-}
-
-.leftFds {
-    width: 25%;
-    max-width: 25%;
-    padding: 25px 25px;
-}
-
-.leftFds a, h1 {
-    text-shadow: 2px 2px 2px #000000;
-}
-
-li img {
-    height: 16px;
-    width: 16px;
-}
-
-li:hover {
-    cursor: pointer;
-    color: white;
-    transition: 0.3s;
 }
