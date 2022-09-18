@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { db } from "$lib/db";
 	import { ipfs } from "$lib/ipfs";
 
 	let file: string | ArrayBuffer | undefined;
@@ -17,23 +18,30 @@
 			data += decoder.decode(chunk, { stream: true });
 		}
 
-		// console.log(data)
-
 		return data;
 	}
 
 	async function addSong(path: string, content: string | ArrayBuffer) {
-		let file = await ipfs?.add({
+		if (!ipfs) return;
+
+		let file = await ipfs.add({
 			path,
 			content,
 		});
+		console.log(file.path);
 
-		console.log("song added");
+		console.log("pinning");
+		await ipfs.pin.add(file.cid);
 
-		console.log(file?.path);
+		console.log("pinned");
 
-		console.log(`https://ipfs.io/ipfs/${file?.cid}`);
-		// alert(`https://ipfs.io/ipfs/${file?.cid}`);
+		console.log(`https://ipfs.io/ipfs/${file.cid}`);
+
+		db.songs.add({
+			title: file.path,
+			author: "Unknown",
+			cid: file.cid.toString(),
+		});
 	}
 
 	const onFileSelected = (
@@ -56,18 +64,7 @@
 	};
 
 	async function onAddSongPressed() {
-		// let files = ipfs.
-
-		// if (!files) return;
-
-		console.log(await cat("QmPChd2hVbrJ6bfo3WBcTW4iZnpHm8TEzWkLHmLpXhF68A"));
-
-		// for await (const file of files) {
-		// 	console.log(file.name);
-		// }
-
-		// console.log(files);
-
+		console.log(file);
 		if (!file) return;
 
 		await addSong(fileName, file);
@@ -76,12 +73,10 @@
 
 <div class="leftFds">
 	<h1>Upload ur mom</h1>
-	<!-- <form> -->
 	<div class="fileInput">
 		<input id="file-upload" type="file" accept="*" on:change={onFileSelected} />
 		<button on:click={onAddSongPressed} type="submit">Upload File</button>
 	</div>
-	<!-- </form> -->
 </div>
 
 <style>

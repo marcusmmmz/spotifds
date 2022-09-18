@@ -1,22 +1,32 @@
 <script lang="ts">
-	import type { ISong } from "$lib/types";
+	import { db, type ISong } from "$lib/db";
+	import { currentlyPlayingSong } from "$lib/stores";
+	import { useLiveQuery } from "$lib/utils";
 
-	let uploadedSongs: ISong[] = [
-		{
-			title: "Lol",
-			author: "baba",
-			cid: "nada",
-		},
-	];
+	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
+
+	async function playSong(id: ISong["id"]) {
+		if (!id) return;
+
+		let song = await db.songs.get(id);
+
+		if (!song) return;
+
+		$currentlyPlayingSong = song;
+	}
 </script>
 
 <div class="mainFds">
 	<h2>Uploaded Songs</h2>
 	<div class="uploadedSongContent">
 		<ul>
-			{#each uploadedSongs as song}
-				<li><img alt="" src="/tune.png" />{song.title} by {song.author}</li>
-			{/each}
+			{#if $uploadedSongs}
+				{#each $uploadedSongs as song}
+					<li on:click={() => playSong(song.id)}>
+						<img alt="" src="/tune.png" />{song.title} by {song.author}
+					</li>
+				{/each}
+			{/if}
 		</ul>
 	</div>
 </div>

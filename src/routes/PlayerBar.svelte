@@ -1,39 +1,24 @@
 <script lang="ts">
-	import type { ISong } from "$lib/types";
+	import { currentlyPlayingSong as song } from "$lib/stores";
+	import { onMount } from "svelte";
 	import "./player.css";
-
-	let song: ISong = {
-		title: "Billie Jean",
-		author: "Michael Jackson",
-		cid: "QmVqUWigstymTeWgf6YcEecE6HXiAUsoAZ9aLEE77qcVnH",
-	};
 
 	let volume = 50;
 	let paused = true;
-	let progress = 0;
 
 	let audio: HTMLAudioElement;
 	let audioDuration = 0;
 	let audioCurrentTime = 0;
 
-	$: url = `https://ipfs.io/ipfs/${song.cid}`;
+	$: progressBarValue = (audioCurrentTime / audioDuration) * 100;
 
 	$: if (audio) audio.volume = volume / 100;
 
-	// let timeLeft = audio.duration - audio.currentTime;
-
-	function play() {
-		//  if (Math.random() > 0.1)
-		//  	audio.src =
-		//  		"https://ipfs.io/ipfs/QmVXazWNEERVNRoqKWJ2DWwyemKnbpPLMzgmFkQNfyb9u7";
-		if (paused) {
+	onMount(() => {
+		audio.addEventListener("canplaythrough", (e) => {
 			audio.play();
-		} else {
-			audio.pause();
-		}
-	}
-
-	let progressBarValue = 0;
+		});
+	});
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -42,21 +27,12 @@
 		return `${minutes}:${returnedSeconds}`;
 	};
 
-	function onTimeUpdate(
-		e: Event & {
-			currentTarget: EventTarget & HTMLAudioElement;
-		}
-	) {
-		progressBarValue = (audio.currentTime / audio.duration) * 100;
+	function onTimeUpdate() {
 		audioDuration = audio.duration;
 		audioCurrentTime = audio.currentTime;
 	}
 
-	function onUpdateProgressBar(
-		e: Event & {
-			currentTarget: EventTarget & HTMLInputElement;
-		}
-	) {
+	function onUpdateProgressBar() {
 		audio.currentTime = progressBarValue * 2.95; // Magic number
 	}
 </script>
@@ -64,17 +40,17 @@
 <audio
 	bind:paused
 	bind:this={audio}
-	on:timeupdate={(e) => onTimeUpdate(e)}
+	on:timeupdate={onTimeUpdate}
 	hidden
-	src={url}
+	src={`https://ipfs.io/ipfs/${$song.cid}`}
 />
 
 <div class="playerBar">
 	<p>
 		{calculateTime(audioCurrentTime)} ({calculateTime(audioDuration)})
 	</p>
-	<h2>{song.title} - {song.author}</h2>
-	<button on:click={play}>
+	<h2>{$song.title} - {$song.author}</h2>
+	<button on:click={() => (paused ? audio.play() : audio.pause())}>
 		<img src={paused ? "/play.png" : "pause.png"} alt="pause/unpause" />
 	</button>
 	<input class="volumeBar" bind:value={volume} type="range" />
