@@ -22,7 +22,7 @@
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
 				<li on:click={() => playSong(song.id)}>
-					<img alt="" src="/tune.png" />{song.title} by {song.author}
+					🎵 {song.title} by {song.author}
 				</li>
 			{/each}
 		{/if}
