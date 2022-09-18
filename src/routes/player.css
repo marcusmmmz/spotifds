@@ -1,6 +1,6 @@
 
 .playerBar {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.778), rgba(0, 0, 0, 0.779),rgba(0, 0, 0, 1));
+    background-image: linear-gradient(rgba(173, 173, 173, 0.778), rgba(0, 0, 0, 0.779),rgba(0, 0, 0, 1));
     backdrop-filter: blur(4px);
     padding: 12px 4px;
     position: fixed;
@@ -20,6 +20,7 @@
 }
 
 .playerBar button {
+    z-index:100;
     border-radius: 100%;
     border: none;
     width: 64px;
@@ -31,6 +32,7 @@
 
     position: absolute;
     bottom: 12px;
+    outline: none;
 }
 
 .playerBar h2 {
@@ -47,10 +49,25 @@
     cursor: pointer;
 }
 
-.playerBar input {
+.playerBar .volumeBar {
     margin: 0;
     margin-left: 75%;
     color: blue;
     position: absolute;
     bottom: 20px;
+}
+
+.progressBar {
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    bottom: 44px;
+    left: -5px;
+}
+
+p {
+    margin: 0;
+    margin-left: 60%;
+    position: absolute;
+    bottom: 18px;
 }

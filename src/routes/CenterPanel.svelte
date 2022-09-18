@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { ISong } from "$lib/types";
-	import "./center.css";
 
 	let uploadedSongs: ISong[] = [
 		{
