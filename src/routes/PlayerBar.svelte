@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { currentlyPlayingSong as song } from "$lib/stores";
+	import { useLocalStorageStore } from "$lib/utils";
 	import { onMount } from "svelte";
 	import "./player.css";
 
-	let volume = 50;
+	let volume = useLocalStorageStore("volume", 50);
 	let paused = true;
 
 	let audio: HTMLAudioElement;
@@ -12,7 +13,7 @@
 
 	$: progressBarValue = (audioCurrentTime / audioDuration) * 100;
 
-	$: if (audio) audio.volume = volume / 100;
+	$: if (audio) audio.volume = $volume / 100;
 
 	onMount(() => {
 		audio.addEventListener("canplaythrough", (e) => {
@@ -53,7 +54,7 @@
 	<button on:click={() => (paused ? audio.play() : audio.pause())}>
 		<img src={paused ? "/play.png" : "pause.png"} alt="pause/unpause" />
 	</button>
-	<input class="volumeBar" bind:value={volume} type="range" />
+	<input class="volumeBar" bind:value={$volume} type="range" />
 
 	<input
 		class="progressBar"
