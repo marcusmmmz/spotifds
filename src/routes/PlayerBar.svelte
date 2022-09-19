@@ -7,10 +7,10 @@
 	let paused = true;
 
 	let audio: HTMLAudioElement;
-	let audioDuration = 0;
-	let audioCurrentTime = 0;
+	let duration = 0;
+	let currentTime = 0;
 
-	$: progressBarValue = (audioCurrentTime / audioDuration) * 100;
+	$: progressBarValue = (currentTime / duration) * 100;
 
 	$: if (audio) audio.volume = $volume / 100;
 
@@ -26,11 +26,6 @@
 		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 		return `${minutes}:${returnedSeconds}`;
 	};
-
-	function onTimeUpdate() {
-		audioDuration = audio.duration;
-		audioCurrentTime = audio.currentTime;
-	}
 
 	function onUpdateProgressBar() {
 		audio.currentTime = progressBarValue * 2.95; // Magic number
@@ -49,18 +44,23 @@
 		<audio
 			bind:paused
 			bind:this={audio}
-			on:timeupdate={onTimeUpdate}
+			on:timeupdate={() => {
+				currentTime = audio.currentTime;
+			}}
+			on:durationchange={() => {
+				duration = audio.duration;
+			}}
 			hidden
-			src={`https://ipfs.io/ipfs/${$song.cid}`}
+			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
 		/>
-		<h2>{$song.title} - {$song.author}</h2>
+		<h2>{$song?.title ?? "Nothing"} - {$song?.author ?? "playing"}</h2>
 		<div class="time-and-pause-container">
-			<p>{calculateTime(audioCurrentTime)}</p>
+			<p>{calculateTime(currentTime)}</p>
 			<button on:click={() => (paused ? audio.play() : audio.pause())}>
 				<img src={paused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
 			</button>
 			<p>
-				{calculateTime(audioDuration || 0)}
+				{calculateTime(duration || 0)}
 			</p>
 		</div>
 		<input class="volumeBar" bind:value={$volume} type="range" />

@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { currentlyPlayingSong } from "./stores";
 
 export interface ISong {
 	id?: number;
@@ -14,6 +15,14 @@ export class MyDexie extends Dexie {
 		super("dexie-spotifds");
 		this.version(1).stores({
 			songs: "++id, title, author, cid",
+		});
+
+		this.on("populate", async () => {
+			await this.songs.add({
+				title: "Billie Jean",
+				author: "Michael Jackson",
+				cid: "QmVqUWigstymTeWgf6YcEecE6HXiAUsoAZ9aLEE77qcVnH",
+			});
 		});
 	}
 }
