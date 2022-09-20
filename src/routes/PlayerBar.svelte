@@ -10,8 +10,6 @@
 	let duration = 0;
 	let currentTime = 0;
 
-	$: progressBarValue = (currentTime / duration) * 100;
-
 	$: if (audio) audio.volume = $volume / 100;
 
 	onMount(() => {
@@ -26,18 +24,18 @@
 		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 		return `${minutes}:${returnedSeconds}`;
 	};
-
-	function onUpdateProgressBar() {
-		audio.currentTime = progressBarValue * 2.95; // Magic number
-	}
 </script>
 
 <div class="bottomBar">
 	<input
 		class="progressBar"
 		type="range"
-		bind:value={progressBarValue}
-		on:input={onUpdateProgressBar}
+		min="0"
+		max={duration}
+		bind:value={currentTime}
+		on:input={() => {
+			audio.currentTime = currentTime;
+		}}
 	/>
 
 	<div class="playerBar">
