@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { createMenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
 	import { db, type ISong } from "$lib/db";
 	import { currentlyPlayingSong } from "$lib/stores";
 	import { useLiveQuery } from "$lib/utils";
+	import SongContextMenu from "./SongContextMenu.svelte";
 
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
 
@@ -14,14 +16,33 @@
 
 		$currentlyPlayingSong = song;
 	}
+
+	let songMenuStore = createMenuStore();
+
+	let contextMenuSongId: number | undefined;
 </script>
+
+<SongContextMenu
+	bind:store={songMenuStore}
+	on:delete={() => {
+		if (!contextMenuSongId) return;
+
+		db.songs.delete(contextMenuSongId);
+	}}
+/>
 
 <h2>Uploaded Songs</h2>
 <div class="container">
 	<ul>
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
-				<li on:click={() => playSong(song.id)}>
+				<li
+					on:click={() => playSong(song.id)}
+					on:contextmenu={(e) => {
+						songMenuStore.open(e);
+						contextMenuSongId = song.id;
+					}}
+				>
 					🎵 {song.title} by {song.author}
 				</li>
 			{/each}
