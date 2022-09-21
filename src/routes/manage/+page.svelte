@@ -17,16 +17,15 @@
 
 		if (title.trim() == "" || author.trim() == "") return;
 
-		let file = await ipfs.add({
-			path,
-			content,
-		});
-		console.log(file.path);
-
-		console.log("pinning");
-		await ipfs.pin.add(file.cid);
-
-		console.log("pinned");
+		let file = await ipfs.add(
+			{
+				path,
+				content,
+			},
+			{
+				pin: true,
+			}
+		);
 
 		console.log(`https://ipfs.io/ipfs/${file.cid}`);
 

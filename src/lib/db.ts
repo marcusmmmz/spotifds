@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import { ipfs } from "./ipfs";
 import { currentlyPlayingSong } from "./stores";
 
 export interface ISong {
@@ -28,3 +29,7 @@ export class MyDexie extends Dexie {
 }
 
 export const db = new MyDexie();
+
+db.songs.hook("deleting", (key, song) => {
+	ipfs?.pin.rm(song.cid);
+});
