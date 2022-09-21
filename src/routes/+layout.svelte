@@ -35,7 +35,7 @@
 	.container {
 		display: grid;
 		flex-direction: column;
-		grid-template-rows: 6fr 1fr;
+		grid-template-rows: 6fr 100px;
 		height: 100%;
 	}
 
