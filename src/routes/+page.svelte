@@ -3,6 +3,7 @@
 	import { db, type ISong } from "$lib/db";
 	import { currentlyPlayingSong } from "$lib/stores";
 	import { useLiveQuery } from "$lib/utils";
+	import EditSongModal from "./EditSongModal.svelte";
 	import SongContextMenu from "./SongContextMenu.svelte";
 
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
@@ -19,16 +20,21 @@
 
 	let songMenuStore = createMenuStore();
 
-	let contextMenuSongId: number | undefined;
+	let selectedSongID: number | undefined;
+
+	let showModal = false;
 </script>
+
+<EditSongModal bind:visible={showModal} bind:songId={selectedSongID} />
 
 <SongContextMenu
 	bind:store={songMenuStore}
 	on:delete={() => {
-		if (!contextMenuSongId) return;
+		if (!selectedSongID) return;
 
-		db.songs.delete(contextMenuSongId);
+		db.songs.delete(selectedSongID);
 	}}
+	on:edit={() => (showModal = true)}
 />
 
 <h2>Uploaded Songs</h2>
@@ -40,7 +46,7 @@
 					on:click={() => playSong(song.id)}
 					on:contextmenu={(e) => {
 						songMenuStore.open(e);
-						contextMenuSongId = song.id;
+						selectedSongID = song.id;
 					}}
 				>
 					🎵 {song.title} by {song.author}

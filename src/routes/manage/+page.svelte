@@ -1,13 +1,9 @@
 <script lang="ts">
-	import { db, type ISong } from "$lib/db";
+	import { db } from "$lib/db";
 	import { ipfs } from "$lib/ipfs";
-	import { useLiveQuery } from "$lib/utils";
 
 	let file: string | ArrayBuffer | undefined;
 	let fileName = "";
-
-	let editedSongId: ISong["id"] | null = null;
-	$: isEditing = editedSongId != null;
 
 	let title = "";
 	let author = "";
@@ -46,13 +42,13 @@
 			currentTarget: EventTarget & HTMLInputElement;
 		}
 	) => {
-		let image = e.currentTarget?.files?.item(0);
-		if (!image) return;
+		let song = e.currentTarget?.files?.item(0);
+		if (!song) return;
 
-		fileName = image.name;
+		fileName = song.name;
 
 		let reader = new FileReader();
-		reader.readAsArrayBuffer(image);
+		reader.readAsArrayBuffer(song);
 		reader.onload = (e) => {
 			let res = e?.target?.result;
 			if (!res) return;
@@ -60,39 +56,11 @@
 		};
 	};
 
-	function startEditing(song: ISong) {
-		editedSongId = song.id;
-		title = song.title;
-		author = song.author;
-	}
-
-	function stopEditing() {
-		editedSongId = null;
-		title = "";
-		author = "";
-	}
-
 	async function onSubmit() {
-		if (isEditing) {
-			if (!editedSongId) return;
+		if (!file) return;
 
-			await db.songs.update(editedSongId, {
-				title,
-				author,
-			});
-		} else {
-			if (!file) return;
-
-			await addSong(fileName, file);
-		}
+		await addSong(fileName, file);
 	}
-
-	function deleteSong(id: ISong["id"]) {
-		if (!id) return;
-		db.songs.delete(id);
-	}
-
-	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
 </script>
 
 <h2>Manage your music</h2>
@@ -117,31 +85,9 @@
 				bind:value={author}
 			/>
 		</label>
-		{#if isEditing}
-			<button on:click={stopEditing}>Stop editing</button>
-		{:else}
-			<input
-				id="file-upload"
-				type="file"
-				accept="*"
-				on:change={onFileSelected}
-			/>
-		{/if}
-		<button type="submit">{isEditing ? "Update" : "Upload File"}</button>
+		<input id="file-upload" type="file" accept="*" on:change={onFileSelected} />
+		<button type="submit">Upload File</button>
 	</form>
-
-	<ul>
-		{#if $uploadedSongs}
-			{#each $uploadedSongs as song}
-				<li>
-					<span on:click={() => deleteSong(song.id)}>🗑️</span>
-					<span on:click={() => startEditing(song)}>
-						{song.title} - {song.author}
-					</span>
-				</li>
-			{/each}
-		{/if}
-	</ul>
 </div>
 
 <style>
@@ -163,6 +109,10 @@
 	}
 
 	label {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
 		font-size: 24px;
 	}
 
@@ -172,7 +122,7 @@
 		border: none;
 		outline: none;
 		background-color: #333333;
-		margin-top: 15px;
+		margin: 5px 0;
 		color: #ffffff;
 	}
 

@@ -11,7 +11,7 @@
 </script>
 
 <ContextMenu bind:store>
-	<MenuOption disabled on:click={() => dispatch("edit")}>📝 Edit</MenuOption>
+	<MenuOption on:click={() => dispatch("edit")}>📝 Edit</MenuOption>
 	<MenuOption on:click={() => dispatch("delete")}>🗑️ Delete</MenuOption>
 	<MenuDivider />
 	<MenuOption disabled>Share</MenuOption>
