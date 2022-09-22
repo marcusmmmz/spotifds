@@ -1,10 +1,9 @@
 <script lang="ts">
+	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
 	import { useLocalStorageStore } from "$lib/utils";
-	import { onMount } from "svelte";
 
 	let volume = useLocalStorageStore("volume", 50);
-	let paused = true;
 
 	let audio: HTMLAudioElement;
 	let duration = 0;
@@ -12,11 +11,18 @@
 
 	$: if (audio) audio.volume = $volume / 100;
 
-	onMount(() => {
-		audio.addEventListener("canplaythrough", (e) => {
+	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
+		const cb = () => {
 			audio.play();
-		});
-	});
+			audio.removeEventListener("canplaythrough", cb);
+		};
+
+		audio.addEventListener("canplaythrough", cb);
+	}
+
+	// $: console.log($isPaused);
+
+	// $: console.log($song);
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -40,7 +46,7 @@
 
 	<div class="playerBar">
 		<audio
-			bind:paused
+			bind:paused={$isPaused}
 			bind:this={audio}
 			on:timeupdate={() => {
 				currentTime = audio.currentTime;
@@ -54,8 +60,8 @@
 		<h2>{$song?.title ?? "Nothing"} - {$song?.author ?? "playing"}</h2>
 		<div class="time-and-pause-container">
 			<p>{calculateTime(currentTime)}</p>
-			<button on:click={() => (paused ? audio.play() : audio.pause())}>
-				<img src={paused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
+			<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
+				<img src={$isPaused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
 			</button>
 			<p>
 				{calculateTime(duration || 0)}
