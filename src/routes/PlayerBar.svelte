@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { db } from "$lib/db";
-	import { currentlyPlayingSong, isPaused } from "$lib/stores";
+	import { db } from '$lib/db';
+	import { currentlyPlayingSong, isPaused } from '$lib/stores';
 	import { currentlyPlayingSong as song } from '$lib/stores';
 	import { useLocalStorageStore } from '$lib/utils';
 	import { onMount } from 'svelte';
@@ -16,7 +16,21 @@
 	let volumeBarEl: HTMLInputElement;
 
 	let bubbleEl: HTMLElement;
-	let oldSliderVal = '-1';
+
+	$: if (audio) audio.volume = $volume / 100;
+
+	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
+		const cb = () => {
+			audio.play();
+			audio.removeEventListener('canplaythrough', cb);
+		};
+
+		audio.addEventListener('canplaythrough', cb);
+	}
+
+	$: if ($volume) volumeBarEl?.style.setProperty('--value', $volume.toString());
+	$: if (currentTime)
+		progressBarEl.style.setProperty('--value', currentTime.toString());
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -34,10 +48,9 @@
 
 	function bubbleMove(e: MouseEvent) {
 		move(e);
-		
+
 		const secs = (e.clientX / window.innerWidth) * duration;
 		bubbleEl.innerText = calculateTime(secs);
-		oldSliderVal = progressBarEl.value;
 	}
 
 	function bubbleShow(e: MouseEvent) {
@@ -49,35 +62,40 @@
 		bubbleEl.style.opacity = '0';
 	}
 
-	function setProperty(el: HTMLInputElement, value: string) {
-		el.style.setProperty('--value', value);
-		el.style.setProperty('--min', '0');
-		el.addEventListener('input', () => el.style.setProperty('--value', el.value));
-	}
-
-	$: if (audio) audio.volume = $volume / 100;
-
 	onMount(() => {
 		audio.addEventListener('canplaythrough', (e) => {
 			audio.play();
 		});
 
-		setProperty(volumeBarEl, volumeBarEl.value);
-		setProperty(progressBarEl, currentTime.toString());
+		volumeBarEl.style.setProperty('--value', $volume.toString());
+		volumeBarEl.style.setProperty('--min', '0');
 		volumeBarEl.style.setProperty('--max', '100');
 
-		progressBarEl.addEventListener('mousemove', bubbleMove);
-		progressBarEl.addEventListener('mouseenter', bubbleShow);
-		progressBarEl.addEventListener('mouseleave', bubbleHide);
+		progressBarEl.style.setProperty('--value', currentTime.toString());
+		progressBarEl.style.setProperty('--min', '0');
 	});
 
 	async function playNextSong() {
 		let nextSong = await db.songs
-			.where("id")
+			.where('id')
 			.above($currentlyPlayingSong?.id)
 			.first();
 
-		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
+		if (!nextSong) nextSong = await db.songs.orderBy('id').first();
+
+		if (!nextSong) return;
+
+		$currentlyPlayingSong = nextSong;
+		$isPaused = false;
+	}
+
+	async function playBackSong() {
+		let nextSong = await db.songs
+			.where('id')
+			.below($currentlyPlayingSong?.id)
+			.last();
+
+		if (!nextSong) nextSong = await db.songs.orderBy('id').last();
 
 		if (!nextSong) return;
 
@@ -96,9 +114,10 @@
 			max={duration}
 			bind:this={progressBarEl}
 			bind:value={currentTime}
-			on:input={() => {
-				audio.currentTime = currentTime;
-			}}
+			on:input={() => (audio.currentTime = currentTime)}
+			on:mousemove={bubbleMove}
+			on:mouseenter={bubbleShow}
+			on:mouseleave={bubbleHide}
 		/>
 	</div>
 
@@ -127,8 +146,18 @@
 	</div>
 	<div class="time-and-pause-container">
 		<p>{calculateTime(currentTime)}</p>
+		<button on:click={playBackSong}>
+			<img style="transform: scale(0.75)" src="back.svg" alt="back" />
+		</button>
 		<button on:click={() => (paused ? audio.play() : audio.pause())}>
-			<img src={paused ? 'play.svg' : 'pause.svg'} alt="pause/unpause" />
+			<img
+				class="svg"
+				src={paused ? 'play.svg' : 'pause.svg'}
+				alt="pause/unpause"
+			/>
+		</button>
+		<button on:click={playNextSong}>
+			<img style="transform: scale(0.75)" src="next.svg" alt="next" />
 		</button>
 		<p>
 			{calculateTime(duration || 0)}
@@ -138,11 +167,6 @@
 		class="volumeBar styled-slider slider-progress"
 		bind:this={volumeBarEl}
 		bind:value={$volume}
-		on:input={() => {
-			console.log(volumeBarEl);
-			console.log($volume.toString());
-			volumeBarEl.style.setProperty('--value', $volume.toString())
-		}}
 		type="range"
 	/>
 </div>
@@ -156,6 +180,7 @@
 		grid-template-areas:
 			'progress progress progress'
 			'name button volume';
+		grid-template-columns: 3fr 1fr 3fr;
 		height: 100%;
 		width: 100%;
 	}
@@ -222,6 +247,7 @@
 			rgba(225, 255, 255, 0) 100%
 		);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		font-size: 10;
 		margin-bottom: 0px;
@@ -234,6 +260,7 @@
 			rgba(225, 255, 255, 0) 100%
 		);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		color: rgba(255, 255, 255, 0.5);
 		margin-top: 0px;
@@ -256,13 +283,19 @@
 	button {
 		background-color: transparent;
 		border: 0px;
-		width: 64px;
+		width: 45px;
 		height: 64px;
 		transition: 0.3s;
 	}
 
 	button:hover {
 		cursor: pointer;
+		filter: brightness(50%);
+	}
+
+	button:active {
+		filter: invert(14%) sepia(100%) saturate(4370%) hue-rotate(281deg)
+			brightness(75%) contrast(107%);
 	}
 
 	.volumeBar {
@@ -306,12 +339,7 @@
 	.progressBar::-moz-range-progress,
 	.volumeBar::-moz-range-progress {
 		height: 10px;
-		background: linear-gradient(
-			90deg,
-			rgba(43, 11, 128, 1) 0%,
-			rgba(130, 10, 179, 1) 35%,
-			rgba(226, 14, 161, 1) 100%
-		);
+		background: linear-gradient(90deg, #2b0b80 0%, #820ab3 35%, #e20ea1 100%);
 	}
 	.volumeBar::-moz-range-track,
 	.volumeBar::-moz-range-progress {
@@ -333,12 +361,7 @@
 
 	.progressBar::-webkit-slider-runnable-track,
 	.volumeBar::-webkit-slider-runnable-track {
-		background: linear-gradient(
-					to right,
-					rgba(43, 11, 128, 1) 0%,
-					rgba(130, 10, 179, 1) 35%,
-					rgba(226, 14, 161, 1) 100%
-				)
+		background: linear-gradient(to right, #2b0b80 0%, #820ab3 35%, #e20ea1 100%)
 				0 / var(--sx) 100% no-repeat,
 			#50555c;
 		width: 100%;
