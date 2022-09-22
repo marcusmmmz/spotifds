@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { db } from "$lib/db";
-	import { currentlyPlayingSong, isPaused } from "$lib/stores";
-	import { currentlyPlayingSong as song } from "$lib/stores";
-	import { useLocalStorageStore } from "$lib/utils";
+	import { currentlyPlayingSong as song } from '$lib/stores';
+	import { useLocalStorageStore } from '$lib/utils';
+	import { onMount } from 'svelte';
 
 	let volume = useLocalStorageStore('volume', 50);
+	let paused = true;
 
 	let audio: HTMLAudioElement;
 	let duration = 0;
@@ -18,14 +18,11 @@
 
 	$: if (audio) audio.volume = $volume / 100;
 
-	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
-		const cb = () => {
+	onMount(() => {
+		audio.addEventListener("canplaythrough", (e) => {
 			audio.play();
-			audio.removeEventListener("canplaythrough", cb);
-		};
-
-		audio.addEventListener("canplaythrough", cb);
-	}
+		});
+	});
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -34,18 +31,57 @@
 		return `${minutes}:${returnedSeconds}`;
 	};
 
-	async function playNextSong() {
-		let nextSong = await db.songs
-			.where("id")
-			.above($currentlyPlayingSong?.id)
-			.first();
+	function move(e: MouseEvent) {
+		const toMove = e.clientX - bubbleEl.offsetWidth / 2 + 15;
+		if (toMove > 16 && toMove < window.innerWidth - 16) {
+			bubbleEl.style.left = toMove + 'px';
+		}
+	}
 
-		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
+	function bubbleMove(e: MouseEvent) {
+		if (oldSliderVal !== '0' && oldSliderVal !== '100') move(e);
+		const secs = (e.clientX / window.innerWidth) * duration;
+		bubbleEl.innerText = calculateTime(secs);
+		oldSliderVal = progressBarEl.value;
+	}
 
-		if (!nextSong) return;
+	function bubbleShow(e: MouseEvent) {
+		move(e);
+		bubbleEl.style.opacity = '1';
+	}
 
-		$currentlyPlayingSong = nextSong;
-		$isPaused = false;
+	function bubbleHide() {
+		bubbleEl.style.opacity = '0';
+	}
+
+	function setProperty(el: HTMLInputElement, value: string) {
+		el.style.setProperty('--value', value);
+		el.style.setProperty('--min', '0');
+		el.addEventListener('input', () => el.style.setProperty('--value', value));
+	}
+
+	$: if (audio) audio.volume = $volume / 100;
+
+	onMount(() => {
+		audio.addEventListener('canplaythrough', (e) => {
+			audio.play();
+		});
+
+		setProperty(volumeBarEl, volumeBarEl.value);
+		setProperty(progressBarEl, currentTime.toString());
+		volumeBarEl.style.setProperty('--max', '100');
+
+		progressBarEl.addEventListener('mousemove', bubbleMove);
+		progressBarEl.addEventListener('mouseenter', bubbleShow);
+		progressBarEl.addEventListener('mouseleave', bubbleHide);
+	});
+
+	function onTimeUpdate() {
+		duration = audio.duration;
+		currentTime = audio.currentTime;
+
+		progressBarEl.style.setProperty('--max', duration.toString());
+		progressBarEl.style.setProperty('--value', currentTime.toString());
 	}
 </script>
 
@@ -66,7 +102,7 @@
 	</div>
 
 		<audio
-			bind:paused={$isPaused}
+			bind:paused
 			bind:this={audio}
 			on:timeupdate={() => {
 				currentTime = audio.currentTime;
@@ -74,7 +110,6 @@
 			on:durationchange={() => {
 				duration = audio.duration;
 			}}
-			on:ended={playNextSong}
 			hidden
 			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
 		/>
@@ -85,8 +120,8 @@
 		</div>
 		<div class="time-and-pause-container">
 			<p>{calculateTime(currentTime)}</p>
-			<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
-				<img src={$isPaused ? 'play.svg' : 'pause.svg'} alt="pause/unpause" />
+			<button on:click={() => (paused ? audio.play() : audio.pause())}>
+				<img src={paused ? 'play.svg' : 'pause.svg'} alt="pause/unpause" />
 			</button>
 			<p>
 				{calculateTime(duration || 0)}
