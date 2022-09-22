@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { db } from "$lib/db";
 	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
 	import { useLocalStorageStore } from "$lib/utils";
@@ -20,16 +21,26 @@
 		audio.addEventListener("canplaythrough", cb);
 	}
 
-	// $: console.log($isPaused);
-
-	// $: console.log($song);
-
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
 		const seconds = Math.floor(secs % 60);
 		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
 		return `${minutes}:${returnedSeconds}`;
 	};
+
+	async function playNextSong() {
+		let nextSong = await db.songs
+			.where("id")
+			.above($currentlyPlayingSong?.id)
+			.first();
+
+		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
+
+		if (!nextSong) return;
+
+		$currentlyPlayingSong = nextSong;
+		$isPaused = false;
+	}
 </script>
 
 <div class="bottomBar">
@@ -54,6 +65,7 @@
 			on:durationchange={() => {
 				duration = audio.duration;
 			}}
+			on:ended={playNextSong}
 			hidden
 			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
 		/>
