@@ -1,21 +1,16 @@
 <script lang="ts">
 	import { createMenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
 	import { db, type ISong } from "$lib/db";
-	import { currentlyPlayingSong } from "$lib/stores";
+	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { useLiveQuery } from "$lib/utils";
 	import EditSongModal from "./EditSongModal.svelte";
 	import SongContextMenu from "./SongContextMenu.svelte";
 
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
 
-	async function playSong(id: ISong["id"]) {
-		if (!id) return;
-
-		let song = await db.songs.get(id);
-
-		if (!song) return;
-
+	async function playSong(song: ISong) {
 		$currentlyPlayingSong = song;
+		$isPaused = false;
 	}
 
 	let songMenuStore = createMenuStore();
@@ -43,7 +38,7 @@
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
 				<li
-					on:click={() => playSong(song.id)}
+					on:click={() => playSong(song)}
 					on:contextmenu={(e) => {
 						songMenuStore.open(e);
 						selectedSongID = song.id;
