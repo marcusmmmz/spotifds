@@ -16,6 +16,14 @@
 	let bubbleEl: HTMLElement;
 	let oldSliderVal = '-1';
 
+	$: if (audio) audio.volume = $volume / 100;
+
+	onMount(() => {
+		audio.addEventListener("canplaythrough", (e) => {
+			audio.play();
+		});
+	});
+
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
 		const seconds = Math.floor(secs % 60);
@@ -97,14 +105,19 @@
 		<audio
 			bind:paused
 			bind:this={audio}
-			on:timeupdate={onTimeUpdate}
+			on:timeupdate={() => {
+				currentTime = audio.currentTime;
+			}}
+			on:durationchange={() => {
+				duration = audio.duration;
+			}}
 			hidden
-			src={`https://ipfs.io/ipfs/${$song.cid}`}
+			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
 		/>
 		<div class="music-name-container">
 			<div class="shadow" />
-			<h2>{$song.title}</h2>
-			<h3>{$song.author}</h3>
+			<h2>{$song?.title ?? "Nothing"}</h2>
+			<h3>{$song?.author ?? "playing"}</h3>
 		</div>
 		<div class="time-and-pause-container">
 			<p>{calculateTime(currentTime)}</p>
@@ -167,17 +180,6 @@
 		color: rgba(255, 255, 255, 0.5);
 		margin-top: 0px;
 	}
-
-	/* .shadow {
-    position:relative;
-    bottom:8em;
-    width:100%;
-    height:100px;
-    background: -webkit-linear-gradient(transparent, white);
-    background: -o-linear-gradient(transparent, white);
-    background: -moz-linear-gradient(transparent, white);
-    background: linear-gradient(transparent, white);
-	} */
 
 	.time-and-pause-container {
 		display: flex;

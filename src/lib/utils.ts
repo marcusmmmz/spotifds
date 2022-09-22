@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { liveQuery, type PromiseExtended } from "dexie";
+import { getContext, setContext } from "svelte";
 import { readable, writable, type Updater } from "svelte/store";
 
 export function useLiveQuery<T extends any>(
@@ -50,4 +51,10 @@ export function useLocalStorageStore<T>(
 			});
 		},
 	};
+}
+
+export function defineContext<T>(): [() => T, (service: T) => T] {
+	const key = Symbol();
+
+	return [() => getContext<T>(key), (service: T) => setContext(key, service)];
 }
