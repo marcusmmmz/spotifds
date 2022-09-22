@@ -33,7 +33,7 @@
 
 	function move(e: MouseEvent) {
 		const toMove = e.clientX - bubbleEl.offsetWidth / 2 + 15;
-		if (toMove > 16 && toMove < window.innerWidth - 35) {
+		if (toMove > 16 && toMove < window.innerWidth - 16) {
 			bubbleEl.style.left = toMove + 'px';
 		}
 	}
@@ -101,7 +101,6 @@
 		/>
 	</div>
 
-	<div class="playerBar">
 		<audio
 			bind:paused
 			bind:this={audio}
@@ -134,19 +133,64 @@
 			bind:value={$volume}
 			type="range"
 		/>
-	</div>
 </div>
 
 <style>
-	.playerBar {
+	.bottomBar {
+		grid-area: player;
+		height: 100%;
 		background-color: #120816;
 		display: grid;
-		grid-template-columns: 3fr 1fr 3fr;
-		height: 100px;
+		grid-template-areas: 'progress progress progress'
+		'name button volume';
+		height: 100%;
 		width: 100%;
 	}
 
+	.range-wrap {
+		grid-area: progress;
+		align-self: start;
+		height: 0px;
+	}
+
+	.range-value span {
+		width: 30px;
+		height: 24px;
+		line-height: 24px;
+		text-align: center;
+		background: #9c03f4;
+		color: #fff;
+		font-size: 12px;
+		display: block;
+		transform: translate(-50%, 0);
+		border-radius: 6px;
+		bottom: 100px;
+		position: absolute;
+		opacity: 0;
+	}
+	.range-value span:before {
+		content: '';
+		position: absolute;
+		width: 0;
+		height: 0;
+		border-top: 10px solid #9c03f4;
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+		top: 100%;
+		left: 50%;
+		margin-left: -5px;
+		margin-top: -1px;
+	}
+
+	.progressBar {
+		width: 100%;
+		margin: 0;
+		position: relative;
+		top: -5px;
+	}
+
 	.music-name-container {
+		grid-area: name;
 		text-align: left;
 		margin-left: 10px;
 		justify-self: start;
@@ -182,6 +226,7 @@
 	}
 
 	.time-and-pause-container {
+		grid-area: button;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -207,18 +252,11 @@
 	}
 
 	.volumeBar {
+		grid-area: volume;
 		width: 125px;
 		margin: 25px;
 		justify-self: end;
 		align-self: center;
-	}
-
-	.progressBar {
-		width: 100%;
-		margin: 0;
-		position: relative;
-		top: 8px;
-		z-index: 1;
 	}
 
 	.volumeBar,
@@ -297,40 +335,5 @@
 
 	.volumeBar::-webkit-slider-runnable-track {
 		border-radius: 10px;
-	}
-
-	.range-value span {
-		width: 30px;
-		height: 24px;
-		line-height: 24px;
-		text-align: center;
-		background: #9c03f4;
-		color: #fff;
-		font-size: 12px;
-		display: block;
-		transform: translate(-50%, 0);
-		border-radius: 6px;
-		bottom: 100px;
-		position: absolute;
-		opacity: 0;
-	}
-	.range-value span:before {
-		content: '';
-		position: absolute;
-		width: 0;
-		height: 0;
-		border-top: 10px solid #9c03f4;
-		border-left: 5px solid transparent;
-		border-right: 5px solid transparent;
-		top: 100%;
-		left: 50%;
-		margin-left: -5px;
-		margin-top: -1px;
-	}
-
-	.bottomBar {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
 	}
 </style>
