@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { db } from "$lib/db";
 	import { currentlyPlayingSong, isPaused } from "$lib/stores";
-	import { currentlyPlayingSong as song } from "$lib/stores";
-	import { useLocalStorageStore } from "$lib/utils";
+	import { currentlyPlayingSong as song } from '$lib/stores';
+	import { useLocalStorageStore } from '$lib/utils';
+	import { onMount } from 'svelte';
 
 	let volume = useLocalStorageStore('volume', 50);
+	let paused = true;
 
 	let audio: HTMLAudioElement;
 	let duration = 0;
@@ -16,37 +17,6 @@
 
 	let bubbleEl: HTMLElement;
 	let oldSliderVal = '-1';
-
-	$: if (audio) audio.volume = $volume / 100;
-
-	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
-		const cb = () => {
-			audio.play();
-			audio.removeEventListener("canplaythrough", cb);
-		};
-
-		audio.addEventListener("canplaythrough", cb);
-	}
-
-	async function playNextSong() {
-		let nextSong = await db.songs
-			.where("id")
-			.above($currentlyPlayingSong?.id)
-			.first();
-
-		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
-
-		if (!nextSong) return;
-
-		$currentlyPlayingSong = nextSong;
-		$isPaused = false;
-	}
-
-	onMount(() => {
-		audio.addEventListener("canplaythrough", (e) => {
-			audio.play();
-		});
-	});
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -81,7 +51,7 @@
 	function setProperty(el: HTMLInputElement, value: string) {
 		el.style.setProperty('--value', value);
 		el.style.setProperty('--min', '0');
-		el.addEventListener('input', () => el.style.setProperty('--value', value));
+		el.addEventListener('input', () => el.style.setProperty('--value', el.value));
 	}
 
 	$: if (audio) audio.volume = $volume / 100;
@@ -100,12 +70,18 @@
 		progressBarEl.addEventListener('mouseleave', bubbleHide);
 	});
 
-	function onTimeUpdate() {
-		duration = audio.duration;
-		currentTime = audio.currentTime;
+	async function playNextSong() {
+		let nextSong = await db.songs
+			.where("id")
+			.above($currentlyPlayingSong?.id)
+			.first();
 
-		progressBarEl.style.setProperty('--max', duration.toString());
-		progressBarEl.style.setProperty('--value', currentTime.toString());
+		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
+
+		if (!nextSong) return;
+
+		$currentlyPlayingSong = nextSong;
+		$isPaused = false;
 	}
 </script>
 
@@ -125,39 +101,49 @@
 		/>
 	</div>
 
-		<audio
-			bind:paused={$isPaused}
-			bind:this={audio}
-			on:timeupdate={() => {
-				currentTime = audio.currentTime;
-			}}
-			on:durationchange={() => {
-				duration = audio.duration;
-			}}
-			on:ended={playNextSong}
-			hidden
-			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
-		/>
-		<div class="music-name-container">
-			<div class="shadow" />
-			<h2>{$song?.title ?? "Nothing"}</h2>
-			<h3>{$song?.author ?? "playing"}</h3>
-		</div>
-		<div class="time-and-pause-container">
-			<p>{calculateTime(currentTime)}</p>
-			<button on:click={() => (isPaused ? audio.play() : audio.pause())}>
-				<img src={$isPaused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
-			</button>
-			<p>
-				{calculateTime(duration || 0)}
-			</p>
-		</div>
-		<input
-			class="volumeBar styled-slider slider-progress"
-			bind:this={volumeBarEl}
-			bind:value={$volume}
-			type="range"
-		/>
+	<audio
+		bind:paused
+		bind:this={audio}
+		on:timeupdate={() => {
+			currentTime = audio.currentTime;
+
+			progressBarEl.style.setProperty('--value', currentTime.toString());
+		}}
+		on:durationchange={() => {
+			duration = audio.duration;
+
+			progressBarEl.max = duration.toString();
+			progressBarEl.style.setProperty('--max', duration.toString());
+		}}
+		on:ended={playNextSong}
+		hidden
+		src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
+	/>
+	<div class="music-name-container">
+		<div class="shadow" />
+		<h2>{$song?.title ?? 'Nothing'}</h2>
+		<h3>{$song?.author ?? 'playing'}</h3>
+	</div>
+	<div class="time-and-pause-container">
+		<p>{calculateTime(currentTime)}</p>
+		<button on:click={() => (paused ? audio.play() : audio.pause())}>
+			<img src={paused ? 'play.svg' : 'pause.svg'} alt="pause/unpause" />
+		</button>
+		<p>
+			{calculateTime(duration || 0)}
+		</p>
+	</div>
+	<input
+		class="volumeBar styled-slider slider-progress"
+		bind:this={volumeBarEl}
+		bind:value={$volume}
+		on:input={() => {
+			console.log(volumeBarEl);
+			console.log($volume.toString());
+			volumeBarEl.style.setProperty('--value', $volume.toString())
+		}}
+		type="range"
+	/>
 </div>
 
 <style>
@@ -166,8 +152,9 @@
 		height: 100%;
 		background-color: #120816;
 		display: grid;
-		grid-template-areas: 'progress progress progress'
-		'name button volume';
+		grid-template-areas:
+			'progress progress progress'
+			'name button volume';
 		height: 100%;
 		width: 100%;
 	}
@@ -191,6 +178,7 @@
 		border-radius: 6px;
 		bottom: 100px;
 		position: absolute;
+		margin-bottom: 15px;
 		opacity: 0;
 	}
 	.range-value span:before {
