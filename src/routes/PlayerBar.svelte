@@ -33,7 +33,8 @@
 	}
 
 	function bubbleMove(e: MouseEvent) {
-		if (oldSliderVal !== '0' && oldSliderVal !== '100') move(e);
+		move(e);
+		
 		const secs = (e.clientX / window.innerWidth) * duration;
 		bubbleEl.innerText = calculateTime(secs);
 		oldSliderVal = progressBarEl.value;
