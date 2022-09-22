@@ -6,7 +6,6 @@
 	import { useLocalStorageStore } from "$lib/utils";
 
 	let volume = useLocalStorageStore('volume', 50);
-	let paused = true;
 
 	let audio: HTMLAudioElement;
 	let duration = 0;
@@ -146,7 +145,7 @@
 		</div>
 		<div class="time-and-pause-container">
 			<p>{calculateTime(currentTime)}</p>
-			<button on:click={() => (paused ? audio.play() : audio.pause())}>
+			<button on:click={() => (isPaused ? audio.play() : audio.pause())}>
 				<img src={$isPaused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
 			</button>
 			<p>
