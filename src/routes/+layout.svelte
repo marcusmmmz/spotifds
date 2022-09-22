@@ -1,14 +1,14 @@
 <script lang="ts">
-	import PlayerBar from "./PlayerBar.svelte";
-	import LeftPanel from "./LeftPanel.svelte";
-	import "./main.css";
-	import { onMount } from "svelte";
+	import PlayerBar from './PlayerBar.svelte';
+	import LeftPanel from './LeftPanel.svelte';
+	import './main.css';
+	import { onMount } from 'svelte';
 
 	onMount(() => {
 		let wallpapers = [
-			"https://wallpapercave.com/dwp1x/wp5984922.jpg",
-			"https://wallpapercave.com/dwp1x/wp4469578.jpg",
-			"https://wallpapercave.com/dwp1x/wp5156508.jpg",
+			'https://wallpapercave.com/dwp1x/wp5984922.jpg',
+			'https://wallpapercave.com/dwp1x/wp4469578.jpg',
+			'https://wallpapercave.com/dwp1x/wp5156508.jpg',
 		];
 		let index = Math.floor(Math.random() * wallpapers.length);
 
@@ -35,8 +35,9 @@
 	.container {
 		display: grid;
 		flex-direction: column;
-		grid-template-areas: 'blur blur'
-		'player player';
+		grid-template-areas:
+			'blur blur'
+			'player player';
 		grid-template-columns: 1fr 3fr;
 		grid-template-rows: auto 100px;
 		height: 100%;
