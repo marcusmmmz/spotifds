@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { currentlyPlayingSong as song } from '$lib/stores';
-	import { useLocalStorageStore } from '$lib/utils';
 	import { onMount } from 'svelte';
+	import { db } from "$lib/db";
+	import { currentlyPlayingSong, isPaused } from "$lib/stores";
+	import { currentlyPlayingSong as song } from "$lib/stores";
+	import { useLocalStorageStore } from "$lib/utils";
 
 	let volume = useLocalStorageStore('volume', 50);
 	let paused = true;
@@ -17,6 +19,29 @@
 	let oldSliderVal = '-1';
 
 	$: if (audio) audio.volume = $volume / 100;
+
+	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
+		const cb = () => {
+			audio.play();
+			audio.removeEventListener("canplaythrough", cb);
+		};
+
+		audio.addEventListener("canplaythrough", cb);
+	}
+
+	async function playNextSong() {
+		let nextSong = await db.songs
+			.where("id")
+			.above($currentlyPlayingSong?.id)
+			.first();
+
+		if (!nextSong) nextSong = await db.songs.orderBy("id").first();
+
+		if (!nextSong) return;
+
+		$currentlyPlayingSong = nextSong;
+		$isPaused = false;
+	}
 
 	onMount(() => {
 		audio.addEventListener("canplaythrough", (e) => {
@@ -102,7 +127,7 @@
 	</div>
 
 		<audio
-			bind:paused
+			bind:paused={$isPaused}
 			bind:this={audio}
 			on:timeupdate={() => {
 				currentTime = audio.currentTime;
@@ -110,6 +135,7 @@
 			on:durationchange={() => {
 				duration = audio.duration;
 			}}
+			on:ended={playNextSong}
 			hidden
 			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
 		/>
@@ -121,7 +147,7 @@
 		<div class="time-and-pause-container">
 			<p>{calculateTime(currentTime)}</p>
 			<button on:click={() => (paused ? audio.play() : audio.pause())}>
-				<img src={paused ? 'play.svg' : 'pause.svg'} alt="pause/unpause" />
+				<img src={$isPaused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
 			</button>
 			<p>
 				{calculateTime(duration || 0)}
