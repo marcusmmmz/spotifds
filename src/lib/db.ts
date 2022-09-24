@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import Dexie, { type Table } from "dexie";
+import { ipfs } from "./ipfs";
 
 export interface ISong {
 	id?: number;
@@ -30,11 +31,7 @@ export class MyDexie extends Dexie {
 export const db = new MyDexie();
 
 if (browser) {
-	// Vercel buld fails if this is imported directly
-	// ReferenceError: global is not defined
-	import("./ipfs").then(({ ipfs }) => {
-		db.songs.hook("deleting", (key, song) => {
-			ipfs?.pin.rm(song.cid);
-		});
+	db.songs.hook("deleting", (key, song) => {
+		ipfs?.pin.rm(song.cid);
 	});
 }

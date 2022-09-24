@@ -5,6 +5,7 @@
 	import { useLiveQuery } from "$lib/utils";
 	import EditSongModal from "./EditSongModal.svelte";
 	import SongContextMenu from "./SongContextMenu.svelte";
+	import { page } from "$app/stores";
 
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
 
@@ -17,10 +18,32 @@
 
 	let selectedSongID: number | undefined;
 
-	let showModal = false;
+	let showEditModal = false;
+
+	async function shareSong() {
+		if (!selectedSongID) return;
+
+		let song = await db.songs.get(selectedSongID);
+
+		if (!song) return;
+
+		let params = new URLSearchParams();
+
+		params.set("title", song.title);
+		params.set("author", song.author);
+		params.set("cid", song.cid);
+
+		let shareUrl = `${$page.url.href}share?${params}`;
+
+		navigator.clipboard.writeText(shareUrl);
+
+		alert(
+			`A sharing link to "${song.title} - ${song.author}" was copied to your clipboard`
+		);
+	}
 </script>
 
-<EditSongModal bind:visible={showModal} bind:songId={selectedSongID} />
+<EditSongModal bind:visible={showEditModal} bind:songId={selectedSongID} />
 
 <SongContextMenu
 	bind:store={songMenuStore}
@@ -29,7 +52,8 @@
 
 		db.songs.delete(selectedSongID);
 	}}
-	on:edit={() => (showModal = true)}
+	on:edit={() => (showEditModal = true)}
+	on:share={shareSong}
 />
 
 <h2>Uploaded Songs</h2>
