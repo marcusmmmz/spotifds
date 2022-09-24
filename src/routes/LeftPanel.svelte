@@ -1,4 +1,4 @@
-<div class="leftFds">
+<div class="left">
 	<h1>Spotifds</h1>
 	<div class="menuSelector">
 		<a href="/">Main Page</a>
@@ -7,13 +7,13 @@
 </div>
 
 <style>
-	.leftFds {
+	.left {
 		width: 25%;
 		max-width: 25%;
 		padding: 25px 25px;
 	}
 
-	.leftFds a,
+	.left a,
 	h1 {
 		text-shadow: 2px 2px 2px #000000;
 	}

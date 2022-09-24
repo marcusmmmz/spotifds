@@ -5,14 +5,14 @@
 	import { onMount } from "svelte";
 
 	onMount(() => {
-		let bullshitery = [
+		let backgroundImages = [
 			"https://wallpapercave.com/dwp1x/wp5984922.jpg",
 			"https://wallpapercave.com/dwp1x/wp4469578.jpg",
 			"https://wallpapercave.com/dwp1x/wp5156508.jpg",
 		];
-		let index = Math.floor(Math.random() * bullshitery.length);
+		let index = Math.floor(Math.random() * backgroundImages.length);
 
-		document.body.style.backgroundImage = `url(${bullshitery[index]})`;
+		document.body.style.backgroundImage = `url(${backgroundImages[index]})`;
 	});
 </script>
 
@@ -23,7 +23,7 @@
 <div class="container">
 	<div class="blurPanel">
 		<LeftPanel />
-		<div class="mainFds">
+		<div class="main">
 			<slot />
 		</div>
 	</div>
@@ -47,7 +47,7 @@
 		display: flex;
 	}
 
-	.mainFds {
+	.main {
 		width: 75%;
 		height: 95%;
 		padding: 25px 25px;
