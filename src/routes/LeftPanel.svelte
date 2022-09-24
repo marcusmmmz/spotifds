@@ -8,6 +8,7 @@
 
 <style>
 	.left {
+		grid-area: panel;
 		width: 25%;
 		max-width: 25%;
 		padding: 25px 25px;

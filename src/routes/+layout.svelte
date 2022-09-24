@@ -35,22 +35,28 @@
 	.container {
 		display: grid;
 		flex-direction: column;
-		grid-template-rows: 6fr 1fr;
+		grid-template-areas:
+			"blur blur"
+			"player player";
+		grid-template-columns: 1fr 3fr;
+		grid-template-rows: auto 100px;
 		height: 100%;
 	}
 
 	.blurPanel {
 		width: 100%;
 		min-height: 100%;
+		grid-area: blur;
 		backdrop-filter: blur(12px);
 
 		display: flex;
 	}
 
 	.main {
-		width: 75%;
-		height: 95%;
+		width: 100%;
+		height: 100%;
 		padding: 25px 25px;
+		grid-area: main;
 		background-color: rgba(54, 54, 54);
 		border-left: 1px solid rgba(32, 32, 32);
 	}

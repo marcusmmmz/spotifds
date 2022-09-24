@@ -84,6 +84,9 @@
 </div>
 
 <style>
+	.bottomBar {
+		grid-area: player;
+	}
 	.playerBar {
 		display: grid;
 		grid-template-columns: 3fr 1fr 3fr;
