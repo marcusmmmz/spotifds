@@ -76,6 +76,7 @@
 	});
 
 	async function playNextSong() {
+		console.log($song?.cid);
 		let nextSong = await db.songs
 			.where('id')
 			.above($currentlyPlayingSong?.id)
@@ -137,7 +138,7 @@
 		}}
 		on:ended={playNextSong}
 		hidden
-		src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
+		src={$song ? `https://ipfs.io/ipfs/${$song.cid}?filename=.mp3` : undefined}
 	/>
 	<div class="music-name-container">
 		<div class="shadow" />
