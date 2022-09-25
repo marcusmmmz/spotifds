@@ -47,7 +47,7 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.modal {
@@ -61,6 +61,6 @@
 		transform: translate(-50%, -50%);
 		padding: 1em;
 		border-radius: 0.2em;
-		background: rgba(32, 32, 32);
+		background: var(--primary-background-color);
 	}
 </style>

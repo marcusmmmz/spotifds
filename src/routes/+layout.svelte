@@ -57,7 +57,7 @@
 		height: 100%;
 		padding: 0 25px;
 		grid-area: main;
-		background-color: rgba(54, 54, 54);
+		background-color: var(--primary-background-color);
 		border-left: 1px solid rgba(32, 32, 32);
 	}
 </style>
