@@ -3,12 +3,16 @@
 	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
 	import { useLocalStorageStore } from "$lib/utils";
+	import { onMount } from "svelte";
 
 	let volume = useLocalStorageStore("volume", 50);
 
 	let audio: HTMLAudioElement;
 	let duration = 0;
 	let currentTime = 0;
+
+	let progressBarEl: HTMLInputElement;
+	let volumeBarEl: HTMLInputElement;
 
 	$: if (audio) audio.volume = $volume / 100;
 
@@ -20,6 +24,12 @@
 
 		audio.addEventListener("canplaythrough", cb);
 	}
+
+	$: volumeBarEl?.style?.setProperty("--value", $volume.toString());
+	$: progressBarEl?.style?.setProperty("--value", currentTime.toString());
+
+	$: if (progressBarEl) progressBarEl.max = duration.toString();
+	$: progressBarEl?.style?.setProperty("--max", duration.toString());
 
 	const calculateTime = (secs: number) => {
 		const minutes = Math.floor(secs / 60);
@@ -44,114 +54,228 @@
 </script>
 
 <div class="bottomBar">
-	<input
-		class="progressBar"
-		type="range"
-		min="0"
-		max={duration}
-		bind:value={currentTime}
-		on:input={() => {
-			audio.currentTime = currentTime;
-		}}
-	/>
-
-	<div class="playerBar">
-		<audio
-			bind:paused={$isPaused}
-			bind:this={audio}
-			on:timeupdate={() => {
-				currentTime = audio.currentTime;
-			}}
-			on:durationchange={() => {
-				duration = audio.duration;
-			}}
-			on:ended={playNextSong}
-			hidden
-			src={$song ? `https://ipfs.io/ipfs/${$song.cid}` : undefined}
+	<div class="range-wrap">
+		<input
+			class="progressBar"
+			type="range"
+			min="0"
+			max={duration}
+			bind:this={progressBarEl}
+			bind:value={currentTime}
+			on:input={() => (audio.currentTime = currentTime)}
 		/>
-		<h2>{$song?.title ?? "Nothing"} - {$song?.author ?? "playing"}</h2>
-		<div class="time-and-pause-container">
-			<p>{calculateTime(currentTime)}</p>
-			<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
-				<img src={$isPaused ? "/play.svg" : "pause.svg"} alt="pause/unpause" />
-			</button>
-			<p>
-				{calculateTime(duration || 0)}
-			</p>
-		</div>
-		<input class="volumeBar" bind:value={$volume} type="range" />
 	</div>
+
+	<audio
+		bind:paused={$isPaused}
+		bind:this={audio}
+		on:timeupdate={() => {
+			currentTime = audio.currentTime;
+		}}
+		on:durationchange={() => {
+			duration = audio.duration;
+		}}
+		on:ended={playNextSong}
+		hidden
+		src={$song ? `https://ipfs.io/ipfs/${$song.cid}?filename=.mp3` : undefined}
+	/>
+	<div class="music-name-container">
+		<h2>{$song?.title ?? "Nothing"}</h2>
+		<h3>{$song?.author ?? "playing"}</h3>
+	</div>
+	<div class="time-and-pause-container">
+		<p>{calculateTime(currentTime)}</p>
+		<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
+			<img
+				class="svg"
+				src={$isPaused ? "/play.svg" : "/pause.svg"}
+				alt="pause/unpause"
+			/>
+		</button>
+		<p>
+			{calculateTime(duration || 0)}
+		</p>
+	</div>
+	<input
+		class="volumeBar"
+		bind:this={volumeBarEl}
+		bind:value={$volume}
+		type="range"
+	/>
 </div>
 
 <style>
 	.bottomBar {
 		grid-area: player;
-	}
-	.playerBar {
+		height: 100%;
+		background-color: #120816;
 		display: grid;
+		grid-template-areas:
+			"progress progress progress"
+			"name button volume";
 		grid-template-columns: 3fr 1fr 3fr;
-		place-items: center;
 		height: 100%;
 		width: 100%;
-		background-image: linear-gradient(
-			rgba(173, 173, 173, 0.778),
-			rgba(0, 0, 0, 0.779),
-			rgba(0, 0, 0, 1)
+	}
+
+	.range-wrap {
+		grid-area: progress;
+		align-self: start;
+		height: 0px;
+	}
+
+	.progressBar {
+		width: 100%;
+		margin: 0;
+		position: relative;
+		top: -5px;
+
+		--range: calc(var(--max) - 0);
+	}
+
+	.music-name-container {
+		grid-area: name;
+		text-align: left;
+		margin-left: 10px;
+		justify-self: start;
+		align-self: center;
+		width: 90%;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.music-name-container h2 {
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 1) 80%,
+			rgba(225, 255, 255, 0) 100%
 		);
-		backdrop-filter: blur(4px);
-		color: white;
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		font-size: 10;
+		margin-bottom: 0px;
+	}
+
+	.music-name-container h3 {
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.5) 80%,
+			rgba(225, 255, 255, 0) 100%
+		);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		color: rgba(255, 255, 255, 0.5);
+		margin-top: 0px;
+	}
+
+	.time-and-pause-container {
+		grid-area: button;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 8px;
+		place-self: center;
 	}
 
 	img {
 		width: 32px;
 		height: 32px;
-		color: white;
 	}
 
 	button {
-		background-color: rgba(180, 180, 180, 1);
-		border: 2px solid rgb(1, 63, 235);
-		border-radius: 100%;
-		width: 64px;
+		background-color: transparent;
+		border: 0px;
+		width: 45px;
 		height: 64px;
 		transition: 0.3s;
 	}
 
 	button:hover {
-		transition: 0.3s;
-		background-color: rgba(210, 210, 210, 1);
-		border: 2px solid rgb(2, 26, 92);
 		cursor: pointer;
+		filter: brightness(50%);
+	}
+
+	button:active {
+		filter: invert(14%) sepia(100%) saturate(4370%) hue-rotate(281deg)
+			brightness(75%) contrast(107%);
 	}
 
 	.volumeBar {
-		margin: 0;
-		margin: 25px 0;
-		color: blue;
+		grid-area: volume;
+		width: 125px;
+		margin: 25px;
+		justify-self: end;
+		align-self: center;
+		--range: calc(100 - 0);
 	}
 
+	.volumeBar,
 	.progressBar {
-		margin: 0;
-		position: relative;
-		top: 4px;
-		z-index: 1;
-	}
-
-	.bottomBar {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
-
-	.progressBar::-webkit-slider-thumb,
-	.progressBar::-moz-range-thumb {
 		cursor: pointer;
+		background-color: transparent;
+		-webkit-appearance: none;
+		height: 14px;
+		--ratio: calc((var(--value) - 0) / var(--range));
+		--sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
 	}
 
-	.time-and-pause-container {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 8px;
+	/*firefox*/
+	.progressBar::-moz-range-track,
+	.volumeBar::-moz-range-track {
+		width: 100%;
+		height: 10px;
+		cursor: pointer;
+		background: #50555c;
+		border: 0px;
+	}
+	.progressBar::-moz-range-thumb,
+	.volumeBar::-moz-range-thumb {
+		box-shadow: 0px;
+		border: 0px;
+		height: 10px;
+		width: 30px;
+		border-radius: 12px;
+		background: rgb(173, 129, 209);
+		cursor: ew-resize;
+	}
+	.progressBar::-moz-range-progress,
+	.volumeBar::-moz-range-progress {
+		height: 10px;
+		background: linear-gradient(90deg, #2b0b80 0%, #820ab3 35%, #e20ea1 100%);
+	}
+	.volumeBar::-moz-range-track,
+	.volumeBar::-moz-range-progress {
+		border-radius: 10px;
+	}
+
+	/*webkit*/
+	.progressBar::-webkit-slider-thumb,
+	.volumeBar::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		box-shadow: 0px;
+		border: 0px;
+		height: 10px;
+		width: 30px;
+		border-radius: 12px;
+		background: rgb(173, 129, 209);
+		cursor: ew-resize;
+	}
+
+	.progressBar::-webkit-slider-runnable-track,
+	.volumeBar::-webkit-slider-runnable-track {
+		background: linear-gradient(to right, #2b0b80 0%, #820ab3 35%, #e20ea1 100%)
+				0 / var(--sx) 100% no-repeat,
+			#50555c;
+		width: 100%;
+		height: 10px;
+		cursor: pointer;
+		border: 0px;
+	}
+
+	.volumeBar::-webkit-slider-runnable-track {
+		border-radius: 10px;
 	}
 </style>

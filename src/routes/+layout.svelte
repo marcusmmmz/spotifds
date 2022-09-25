@@ -55,7 +55,7 @@
 	.main {
 		width: 100%;
 		height: 100%;
-		padding: 25px 25px;
+		padding: 0 25px;
 		grid-area: main;
 		background-color: rgba(54, 54, 54);
 		border-left: 1px solid rgba(32, 32, 32);
