@@ -128,7 +128,7 @@
 	.bottomBar {
 		grid-area: player;
 		height: 100%;
-		background-color: #120816;
+		background-color: var(--primary-background-color);
 		display: grid;
 		grid-template-areas:
 			"progress progress progress"

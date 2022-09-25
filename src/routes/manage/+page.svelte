@@ -96,7 +96,7 @@
 		flex-direction: column;
 		align-items: center;
 
-		background-color: #444444;
+		background-color: var(--secondary-background-color);
 		height: 75%;
 		padding: 12px 12px;
 	}

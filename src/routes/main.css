@@ -14,3 +14,8 @@ html, body {
     width: 100%;
     height: 100%;
 }
+
+:root {
+    --primary-background-color: #120816;
+    --secondary-background-color: hsl(283, 47%, 10%);
+}
