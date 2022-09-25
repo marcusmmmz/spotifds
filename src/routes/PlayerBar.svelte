@@ -51,6 +51,20 @@
 		$currentlyPlayingSong = nextSong;
 		$isPaused = false;
 	}
+
+	async function playPreviousSong() {
+		let previousSong = await db.songs
+			.where("id")
+			.below($currentlyPlayingSong?.id)
+			.last();
+
+		if (!previousSong) previousSong = await db.songs.orderBy("id").last();
+
+		if (!previousSong) return;
+
+		$currentlyPlayingSong = previousSong;
+		$isPaused = false;
+	}
 </script>
 
 <div class="bottomBar">
@@ -85,12 +99,18 @@
 	</div>
 	<div class="time-and-pause-container">
 		<p>{calculateTime(currentTime)}</p>
+		<button on:click={playPreviousSong}>
+			<img style="transform: scale(0.75)" src="previous.svg" alt="back" />
+		</button>
 		<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
 			<img
 				class="svg"
-				src={$isPaused ? "/play.svg" : "/pause.svg"}
+				src={$isPaused ? "play.svg" : "pause.svg"}
 				alt="pause/unpause"
 			/>
+		</button>
+		<button on:click={playNextSong}>
+			<img style="transform: scale(0.75)" src="next.svg" alt="next" />
 		</button>
 		<p>
 			{calculateTime(duration || 0)}
