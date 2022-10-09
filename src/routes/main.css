@@ -1,10 +1,5 @@
 body {   
-    background-image: url("https://wallpapercave.com/dwp1x/wp5156508.jpg");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
     color: white;
-    /* margin-bottom: 5px; */
 
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -16,6 +11,18 @@ html, body {
 }
 
 :root {
-    --primary-background-color: #120816;
-    --secondary-background-color: hsl(283, 47%, 10%);
+	--purple: #2b0b80;
+	--pink: #e20ea1;
+	--yellow: #e2c20e;
+	--orange: #e25c0e;
+
+	/* --range-gradient: linear-gradient(90deg, var(--purple) 0%, var(--pink) 100%);
+	--range-background-color: #50385f;
+	--range-thumb-color: #ad81d1; */
+
+	/* --primary-foreground-color: #2e0564;
+	--secondary-foreground-color: #350336; */
+
+	--primary-background-color: #1b0c20;
+	--secondary-background-color: #270633;
 }
