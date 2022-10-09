@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { createMenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
-	import { db, type ISong } from "$lib/db";
-	import { currentlyPlayingSong, isPaused } from "$lib/stores";
-	import { useLiveQuery } from "$lib/utils";
-	import EditSongModal from "./EditSongModal.svelte";
-	import SongContextMenu from "./SongContextMenu.svelte";
-	import { page } from "$app/stores";
+	import { createMenuStore } from '$lib/ContextMenu/ContextMenu.svelte';
+	import { db, type ISong } from '$lib/db';
+	import { currentlyPlayingSong, isPaused } from '$lib/stores';
+	import { useLiveQuery } from '$lib/utils';
+	import EditSongModal from './EditSongModal.svelte';
+	import SongContextMenu from './SongContextMenu.svelte';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
+	let songs: ISong[];
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
 
 	async function playSong(song: ISong) {
@@ -29,9 +31,12 @@
 
 		let params = new URLSearchParams();
 
-		params.set("title", song.title);
-		params.set("author", song.author);
-		params.set("cid", song.cid);
+		params.set('title', song.title);
+		params.set('author', song.author);
+		params.set('cid', song.cid);
+		if (song.duration) {
+			params.set('duration', song.duration.toString());
+		}
 
 		let shareUrl = `${$page.url.href}share?${params}`;
 
@@ -41,6 +46,46 @@
 			`A sharing link to "${song.title} - ${song.author}" was copied to your clipboard`
 		);
 	}
+
+	const calculateTime = (secs?: number) => {
+		if (!secs) return '--:--';
+
+		const minutes = Math.floor(secs / 60);
+		const seconds = Math.floor(secs % 60);
+		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+		return `${minutes}:${returnedSeconds}`;
+	};
+
+	let songsContainerEl: HTMLElement;
+
+	onMount(async () => {
+
+		let audio = document.createElement('audio');
+		songs = await db.songs.toArray();
+
+		let index = -1;
+
+		function next() {
+			let nextSong = songs[++index];
+
+			if (nextSong && nextSong.duration) {
+				next();
+			} else {
+				if (!nextSong) return;
+
+				audio.src = `https://ipfs.io/ipfs/${nextSong.cid}?filename=.mp3`;
+			}
+		}
+
+		audio.onloadedmetadata = () => {
+			let duration = audio.duration;
+			// console.log(duration);
+			db.songs.update(songs[index], { duration });
+			next();
+		};
+
+		next();
+	});
 </script>
 
 <EditSongModal bind:visible={showEditModal} bind:songId={selectedSongID} />
@@ -57,7 +102,7 @@
 />
 
 <h2>Uploaded Songs</h2>
-<div class="container">
+<div class="container" bind:this={songsContainerEl}>
 	<ul>
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
