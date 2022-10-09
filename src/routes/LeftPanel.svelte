@@ -1,5 +1,4 @@
 <div class="left">
-	<h1>Spotifds</h1>
 	<div class="menuSelector">
 		<a href="/">Main Page</a>
 		<a href="/manage">Manage</a>
@@ -14,8 +13,7 @@
 		padding: 25px 25px;
 	}
 
-	.left a,
-	h1 {
+	.left a {
 		text-shadow: 2px 2px 2px #000000;
 	}
 
