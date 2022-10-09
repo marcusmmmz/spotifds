@@ -7,6 +7,7 @@ export interface ISong {
 	title: string;
 	author: string;
 	cid: string;
+	duration?: number;
 }
 
 export class MyDexie extends Dexie {
@@ -14,8 +15,8 @@ export class MyDexie extends Dexie {
 
 	constructor() {
 		super("dexie-spotifds");
-		this.version(1).stores({
-			songs: "++id, title, author, cid",
+		this.version(2).stores({
+			songs: "++id, title, author, cid, duration",
 		});
 
 		this.on("populate", async () => {
