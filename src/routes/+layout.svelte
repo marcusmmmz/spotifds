@@ -33,8 +33,21 @@
 		padding-left: 25px;
 		padding-right: 25px;
 		grid-area: main;
+		background-color: var(--primary-foreground-color);
 		background-image: linear-gradient(var(--primary-foreground-color) 0%, var(--secondary-foreground-color) 100%);
 		overflow: scroll;
 		overflow-x: hidden;
+	}
+
+	.main::-webkit-scrollbar-track {
+		background-color: var(--primary-background-color);
+	}
+
+	.main::-webkit-scrollbar {
+		width: 15px;
+	}
+
+	.main::-webkit-scrollbar-thumb {
+		background-color: #7b6991;
 	}
 </style>

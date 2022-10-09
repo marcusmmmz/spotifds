@@ -106,37 +106,86 @@
 	<ul>
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
-				<li
+				<div class="song"
 					on:click={() => playSong(song)}
 					on:contextmenu={(e) => {
 						songMenuStore.open(e);
 						selectedSongID = song.id;
 					}}
 				>
-					🎵 {song.title} by {song.author}
-				</li>
+					<div class="image">
+						<img style="transform: scale(0.55)" src="quavers-pair.svg" alt="back">
+					</div>
+					<div class="title">
+						<h1>{song.title}</h1>
+					</div>
+					<div class="author">
+						<h2>{song.author}</h2>
+					</div>
+					<div class="time">
+						<h3>{calculateTime(song.duration)}</h3>
+					</div>
+				</div>
 			{/each}
 		{/if}
 	</ul>
 </div>
 
 <style>
-	.container {
-		background-color: var(--secondary-background-color);
-		height: 75%;
-		padding: 12px 12px;
-	}
-
-	ul,
-	li {
-		list-style-type: none;
+	.song {
+		background-color: var(--primary-background-color);
+		margin-bottom: 5px;
+		display: grid;
+		grid-template-areas:
+			"icon title title"
+			"icon autor duration";
+		grid-template-columns: 100px auto 100px;
+		grid-template-rows: 50px 50px;
 		color: rgb(202, 202, 202);
-		transition: 0.3s;
+		text-overflow: clip;
 	}
 
-	li:hover {
+	.song:hover {
 		cursor: pointer;
 		color: white;
-		transition: 0.3s;
+	}
+
+	.image {
+		grid-area: icon;
+		width: 100%;
+		height: 100%;
+	}
+
+	img {
+		width: 100%;
+		height: 100%;
+	}
+
+	.title {
+		grid-area: title;
+		height: 100%;
+		width: calc(100% - 10px); 
+		white-space: nowrap; 
+		overflow: hidden;
+		text-overflow: ellipsis; 
+		align-self: center;
+	}
+
+	.title h1 {
+		font-size: 30px;
+		margin-right: 10px;
+	}
+
+	.author {
+		height: 100%;
+		grid-area: autor;
+	}
+
+	.author h2 {
+		font-size: 17px;
+	}
+
+	.time {
+		grid-area: duration;
 	}
 </style>
