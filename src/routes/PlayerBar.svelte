@@ -3,7 +3,6 @@
 	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
 	import { useLocalStorageStore } from "$lib/utils";
-	import { onMount } from "svelte";
 
 	let volume = useLocalStorageStore("volume", 50);
 
@@ -248,7 +247,7 @@
 		width: 100%;
 		height: 10px;
 		cursor: pointer;
-		background: #50555c;
+		background: var(--range-background-color);
 		border: 0px;
 	}
 	.progressBar::-moz-range-thumb,
@@ -258,13 +257,13 @@
 		height: 10px;
 		width: 30px;
 		border-radius: 12px;
-		background: rgb(173, 129, 209);
+		background: var(--range-thumb-color);
 		cursor: ew-resize;
 	}
 	.progressBar::-moz-range-progress,
 	.volumeBar::-moz-range-progress {
 		height: 10px;
-		background: linear-gradient(90deg, #2b0b80 0%, #820ab3 35%, #e20ea1 100%);
+		background: var(--range-gradient);
 	}
 	.volumeBar::-moz-range-track,
 	.volumeBar::-moz-range-progress {
@@ -280,15 +279,13 @@
 		height: 10px;
 		width: 30px;
 		border-radius: 12px;
-		background: rgb(173, 129, 209);
+		background: var(--range-thumb-color);
 		cursor: ew-resize;
 	}
 
 	.progressBar::-webkit-slider-runnable-track,
 	.volumeBar::-webkit-slider-runnable-track {
-		background: linear-gradient(to right, #2b0b80 0%, #820ab3 35%, #e20ea1 100%)
-				0 / var(--sx) 100% no-repeat,
-			#50555c;
+		background: var(--range-gradient) 0 / var(--sx) 100% no-repeat, var(--range-background-color);
 		width: 100%;
 		height: 10px;
 		cursor: pointer;

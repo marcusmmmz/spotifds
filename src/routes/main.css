@@ -16,9 +16,9 @@ html, body {
 	--yellow: #e2c20e;
 	--orange: #e25c0e;
 
-	/* --range-gradient: linear-gradient(90deg, var(--purple) 0%, var(--pink) 100%);
+	--range-gradient: linear-gradient(90deg, var(--purple) 0%, var(--pink) 100%);
 	--range-background-color: #50385f;
-	--range-thumb-color: #ad81d1; */
+	--range-thumb-color: #ad81d1;
 
 	/* --primary-foreground-color: #2e0564;
 	--secondary-foreground-color: #350336; */
