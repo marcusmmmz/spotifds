@@ -33,7 +33,6 @@
 		padding-left: 25px;
 		padding-right: 25px;
 		grid-area: main;
-		background-color: var(--secondary-background-color);
 		background-image: linear-gradient(var(--primary-foreground-color) 0%, var(--secondary-foreground-color) 100%);
 		overflow: scroll;
 		overflow-x: hidden;
