@@ -114,10 +114,10 @@
 					}}
 				>
 					<div class="image">
-						<img style="transform: scale(0.55)" src="quavers-pair.svg" alt="back">
+						<img src={song.cid == $currentlyPlayingSong?.cid ? "play.svg" : "quavers-pair.svg"} alt="back">
 					</div>
 					<div class="title">
-						<h1>{song.title}</h1>
+						<h2>{song.title}</h2>
 					</div>
 					<div class="author">
 						<h2>{song.author}</h2>
@@ -132,6 +132,10 @@
 </div>
 
 <style>
+	ul {
+		padding-left: 0;
+	}
+	
 	.song {
 		background-color: var(--primary-background-color);
 		margin-bottom: 5px;
@@ -139,8 +143,8 @@
 		grid-template-areas:
 			"icon title title"
 			"icon autor duration";
-		grid-template-columns: 100px auto 100px;
-		grid-template-rows: 50px 50px;
+		grid-template-columns: 75px auto 75px;
+		grid-template-rows: 40px 40px;
 		color: rgb(202, 202, 202);
 		text-overflow: clip;
 	}
@@ -156,9 +160,16 @@
 		height: 100%;
 	}
 
+	.song .image {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	img {
-		width: 100%;
-		height: 100%;
+		object-fit: scale-down;
+		width: 75%;
+		height: 75%;
 	}
 
 	.title {
@@ -171,9 +182,11 @@
 		align-self: center;
 	}
 
-	.title h1 {
+	.title h2 {
 		font-size: 30px;
 		margin-right: 10px;
+		margin-top: 8px;
+		text-overflow: ellipsis; 
 	}
 
 	.author {
@@ -183,9 +196,14 @@
 
 	.author h2 {
 		font-size: 17px;
+		margin-top: 8px;
 	}
 
 	.time {
 		grid-area: duration;
+	}
+
+	.time h3 {
+		margin-top: 8px;
 	}
 </style>
