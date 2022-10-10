@@ -117,7 +117,8 @@
 		position: absolute;
 		display: grid;
 		border: 1px solid #0003;
-		box-shadow: 2px 2px 5px 0px #0002;
-		background: #333333;
+		box-shadow: 0px 0px 5px #000;
+		background: var(--secondary-background-color);
+		z-index: 1;
 	}
 </style>

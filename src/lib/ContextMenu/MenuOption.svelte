@@ -27,11 +27,11 @@
 		display: flex;
 		align-items: center;
 		grid-gap: 5px;
-		background: #333333;
 		color: white;
 	}
 	div:hover {
-		background: #0002;
+		cursor: pointer;
+		background-color: var(--primary-background-color);
 	}
 	.disabled {
 		color: rgb(128, 128, 128);
