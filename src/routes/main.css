@@ -1,10 +1,5 @@
 body {   
-    background-image: url("https://wallpapercave.com/dwp1x/wp5156508.jpg");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
     color: white;
-    /* margin-bottom: 5px; */
 
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -16,6 +11,76 @@ html, body {
 }
 
 :root {
-    --primary-background-color: #120816;
-    --secondary-background-color: hsl(283, 47%, 10%);
+	--purple: #2b0b80;
+	--pink: #e20ea1;
+	--yellow: #e2c20e;
+	--orange: #e25c0e;
+
+	--low-pink: #e039ae;
+
+	--range-gradient: linear-gradient(90deg, var(--purple) 0%, var(--pink) 100%);
+	--range-background-color: #50385f;
+	--range-thumb-color: #ad81d1;
+
+	--primary-foreground-color: #2e0564;
+	--secondary-foreground-color: #350336;
+
+	--primary-background-color: #1b0c20;
+	--secondary-background-color: #270633;
+
+	--accent-color: var(--pink);
+	--hover-color: var(--low-pink);
+}
+
+.button {
+	margin: 6px 6px;
+	padding: 12px 12px;
+	outline: none;
+	border: none;
+	background-color: var(--accent-color);
+	color: white;
+}
+
+.button:hover {
+	background-color: var(--hover-color);
+}
+
+.button:active {
+	background-color: var(--orange);
+}
+
+.group {
+	padding-top: 20px;
+	height: 50px;
+	width: 100%;
+}
+
+.group p {
+	color: var(--accent-color);
+	position: relative;
+	height: 0px;
+	top: -45px;
+	pointer-events:none;
+	transition: 0.2s;
+}
+
+input[type="text"] {
+	border: none;
+	border-bottom: solid 1px var(--accent-color);
+	font-size: 20px;
+	outline: none;
+	background: none;
+	color: #ffffff;
+	width: 100%;
+}
+
+input[type="text"]:focus {
+	border-bottom: solid 1px var(--orange);
+}
+
+input[type="text"]:focus ~ p, input[type="text"]:valid ~ p {
+	color: var(--orange);
+	transition: 0.2s;
+	top: -60px;
+	font-size: 13px;
 }
