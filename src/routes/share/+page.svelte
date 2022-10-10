@@ -26,14 +26,30 @@
 </script>
 
 <h2>Do you want to add this song to your library?</h2>
-<div>
-	<h3>
-		{title} - {author}
-	</h3>
-	<button on:click={addSong}>Add song</button>
+<div class="container">
+	<div class="add-song-container">
+		<h3>
+			{title} - {author}
+		</h3>
+		<button class="button" on:click={addSong}>Add song</button>
+	</div>
 </div>
 
 <style>
+	.container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+	.add-song-container {
+		display: flex;
+		flex-direction: column;
+
+		background-color: var(--secondary-background-color);
+		width: 90%;
+		padding: 2% 2%;
+	}
 	div {
 		display: flex;
 		flex-direction: column;
@@ -41,10 +57,6 @@
 	}
 
 	button {
-		width: 30%;
-		padding: 12px 12px;
-		border: none;
-		background-color: rgb(55, 141, 255);
-		color: white;
+		/* width: 30%; */
 	}
 </style>
