@@ -21,7 +21,7 @@
 
 	async function updatePlaylist() {
 		playlist = (await db.playlists.get(playlistId)) ?? {
-			title: "Unknown",
+			title: "Unknown"
 		};
 	}
 

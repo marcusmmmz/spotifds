@@ -14,7 +14,7 @@
 
 	async function createPlaylist() {
 		let playlistId = await db.playlists.add({
-			title,
+			title
 		});
 
 		await addToPlaylist(playlistId);
@@ -31,7 +31,7 @@
 		db.playlistSongs.add({
 			playlistId,
 			songId,
-			index: count,
+			index: count
 		});
 
 		visible = false;

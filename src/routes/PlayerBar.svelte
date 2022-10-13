@@ -5,7 +5,7 @@
 	import {
 		calculateTime,
 		useLiveQuery,
-		useLocalStorageStore,
+		useLocalStorageStore
 	} from "$lib/utils";
 
 	let volume = useLocalStorageStore("volume", 50);
@@ -42,7 +42,7 @@
 		() =>
 			db.playlistSongs.get({
 				songId: $currentlyPlayingSong?.id,
-				playlistId: $currentPlaylist?.id,
+				playlistId: $currentPlaylist?.id
 			}),
 		undefined
 	);

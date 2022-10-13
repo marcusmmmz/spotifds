@@ -18,7 +18,7 @@
 		await db.songs.add({
 			title,
 			author,
-			cid,
+			cid
 		});
 
 		goto("/");

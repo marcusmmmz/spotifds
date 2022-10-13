@@ -24,7 +24,7 @@
 		if (!playlistId) return;
 
 		await db.playlists.update(playlistId, {
-			title,
+			title
 		});
 
 		visible = false;

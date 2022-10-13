@@ -4,7 +4,7 @@
 	export function useContextMenu() {
 		let store = writable({
 			pos: { x: 0, y: 0 },
-			showMenu: false,
+			showMenu: false
 		});
 
 		function open(e: MouseEvent) {
@@ -19,14 +19,14 @@
 					() =>
 						store.update(() => ({
 							pos,
-							showMenu: true,
+							showMenu: true
 						})),
 					100
 				);
 
 				return {
 					pos,
-					showMenu: false,
+					showMenu: false
 				};
 			});
 		}
@@ -41,7 +41,7 @@
 		return {
 			...store,
 			open,
-			close,
+			close
 		};
 	}
 

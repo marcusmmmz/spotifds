@@ -1,12 +1,12 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
-	import { db, type ISong } from '$lib/db';
+	import Modal from "$lib/Modal.svelte";
+	import { db, type ISong } from "$lib/db";
 
 	export let visible = false;
-	export let songId: ISong['id'];
+	export let songId: ISong["id"];
 
-	let title = '';
-	let author = '';
+	let title = "";
+	let author = "";
 
 	$: if (visible) startEditing();
 
@@ -27,7 +27,7 @@
 
 		await db.songs.update(songId, {
 			title,
-			author,
+			author
 		});
 
 		visible = false;

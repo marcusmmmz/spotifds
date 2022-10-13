@@ -18,7 +18,7 @@ export function useLiveQuery<T extends any>(
 			callback(defaultValue);
 
 			return unsubscribe;
-		},
+		}
 	};
 }
 
@@ -51,7 +51,7 @@ export function useLocalStorageStore<T>(
 				save(value);
 				return updater(value);
 			});
-		},
+		}
 	};
 }
 

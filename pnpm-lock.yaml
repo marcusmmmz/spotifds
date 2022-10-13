@@ -3,10 +3,12 @@ lockfileVersion: 5.4
 specifiers:
   '@sveltejs/adapter-auto': next
   '@sveltejs/adapter-vercel': 1.0.0-next.76
-  '@sveltejs/kit': 1.0.0-next.514
+  '@sveltejs/kit': next
   dexie: ^3.2.2
   ipfs-core: ^0.16.0
   node-fetch: ^3.2.10
+  prettier: ^2.6.2
+  prettier-plugin-svelte: ^2.7.0
   svelte: ^3.44.0
   svelte-check: ^2.7.1
   svelte-preprocess: ^4.10.6
@@ -16,12 +18,14 @@ specifiers:
   vite: ^3.1.0
 
 devDependencies:
-  '@sveltejs/adapter-auto': 1.0.0-next.82
+  '@sveltejs/adapter-auto': 1.0.0-next.83
   '@sveltejs/adapter-vercel': 1.0.0-next.76
-  '@sveltejs/kit': 1.0.0-next.514_svelte@3.50.1+vite@3.1.2
+  '@sveltejs/kit': 1.0.0-next.516_svelte@3.50.1+vite@3.1.2
   dexie: 3.2.2
   ipfs-core: 0.16.0_pfoqomcgvehmtzydofkquizxzq
   node-fetch: 3.2.10
+  prettier: 2.7.1
+  prettier-plugin-svelte: 2.8.0_nk6d2fkgcllkkdynqbuearcure
   svelte: 3.50.1
   svelte-check: 2.9.0_svelte@3.50.1
   svelte-preprocess: 4.10.7_iprco5tylfmvffqgrvqxc46njy
@@ -1199,27 +1203,27 @@ packages:
       '@stablelib/wipe': 1.0.1
     dev: true
 
-  /@sveltejs/adapter-auto/1.0.0-next.82:
-    resolution: {integrity: sha512-TWckpkD7fLwwNcHHN7gDuV+xpu07NJ6aaMa6p9FgeFF16yBeEyGVtsM2bpujjS+u0w6IP4VGsRWEMOOF2b/WYA==}
+  /@sveltejs/adapter-auto/1.0.0-next.83:
+    resolution: {integrity: sha512-6Km4x792PjHaN0H0odsy7JOj3jdDZqN1tA58B1b96xWUUUj87tw6XYC7VWRBjwo2wZqWkRat94IegrtAAhYVaA==}
     dependencies:
-      '@sveltejs/adapter-cloudflare': 1.0.0-next.38
-      '@sveltejs/adapter-netlify': 1.0.0-next.80
-      '@sveltejs/adapter-vercel': 1.0.0-next.78
+      '@sveltejs/adapter-cloudflare': 1.0.0-next.39
+      '@sveltejs/adapter-netlify': 1.0.0-next.81
+      '@sveltejs/adapter-vercel': 1.0.0-next.79
     transitivePeerDependencies:
       - encoding
       - supports-color
     dev: true
 
-  /@sveltejs/adapter-cloudflare/1.0.0-next.38:
-    resolution: {integrity: sha512-N6jdTomRZkdKlcNoguwYD7lpdXSt0beIyUJsp0MS/YLm/4gI83y698zFYInFKJ9t5e6DAnuEBSAXcg568z2oFA==}
+  /@sveltejs/adapter-cloudflare/1.0.0-next.39:
+    resolution: {integrity: sha512-95iRY3+mFVqEp4BqTJQGAyga7gSovIsm4SvhqsfBE/IQLkb2MnwLq2usRkXm9R6nby4w/jzEwgQM2ohsZD2HHA==}
     dependencies:
       '@cloudflare/workers-types': 3.16.0
       esbuild: 0.15.7
       worktop: 0.8.0-next.14
     dev: true
 
-  /@sveltejs/adapter-netlify/1.0.0-next.80:
-    resolution: {integrity: sha512-L7Y3hXenJwmPbuzG+o8eUPm/6F3KpHHPUKRgoryYKgVjYGEHt1y1Go1k0JF6Tww8WF59y/j+ljWcBo9RU7MpeQ==}
+  /@sveltejs/adapter-netlify/1.0.0-next.81:
+    resolution: {integrity: sha512-jWZHw2uqUMJk8lFPzRm0xxmBZoDc430tbeCU9EtYhG+ypze2B6pJAlNTtcN3/J7wapHq19TgEK5oNt4LqORfNg==}
     dependencies:
       '@iarna/toml': 2.2.5
       esbuild: 0.15.7
@@ -1236,8 +1240,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sveltejs/adapter-vercel/1.0.0-next.78:
-    resolution: {integrity: sha512-K7zOlVwX/MV/b6iUbrY7QVn+v8ABBSEi6rjIfYiXCZc+j0nS5WNrcH1/Qdk/pzxK+7O5OuaNZAw3QylJDV5CZw==}
+  /@sveltejs/adapter-vercel/1.0.0-next.79:
+    resolution: {integrity: sha512-Mitw34vS+wR/qxZm6qOUltf910N8gcekYZHaEVxO6HaE/9LyEZ/O03e9rRKwo4LAWrHXOkHMdUxvv1VcS9BqmQ==}
     dependencies:
       '@vercel/nft': 0.22.1
       esbuild: 0.15.7
@@ -1246,8 +1250,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.514_svelte@3.50.1+vite@3.1.2:
-    resolution: {integrity: sha512-1vBKNeLkaQGz/QEQ9bxWwqHwJbBQJTVKReFoFQugGBhiT/Q39Uv+FpXWh+XND9OxMJ947ndqp/EiQj0IAmPwhg==}
+  /@sveltejs/kit/1.0.0-next.516_svelte@3.50.1+vite@3.1.2:
+    resolution: {integrity: sha512-n0oGcv7xpgJ81ld1oER5HVREP4TdeDUJ8S64XNDcl3Y2xfQLKk8C4SLYQw2D6V+DxUm8V3aRrj7N7/tm4CQm6A==}
     engines: {node: '>=16.14'}
     hasBin: true
     requiresBuild: true
@@ -3626,6 +3630,22 @@ packages:
       nanoid: 3.3.4
       picocolors: 1.0.0
       source-map-js: 1.0.2
+    dev: true
+
+  /prettier-plugin-svelte/2.8.0_nk6d2fkgcllkkdynqbuearcure:
+    resolution: {integrity: sha512-QlXv/U3bUszks3XYDPsk1fsaQC+fo2lshwKbcbO+lrSVdJ+40mB1BfL8OCAk1W9y4pJxpqO/4gqm6NtF3zNGCw==}
+    peerDependencies:
+      prettier: ^1.16.4 || ^2.0.0
+      svelte: ^3.2.0
+    dependencies:
+      prettier: 2.7.1
+      svelte: 3.50.1
+    dev: true
+
+  /prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /private-ip/2.3.4:

@@ -7,12 +7,16 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --plugin-search-dir . --check .",
+		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/adapter-vercel": "1.0.0-next.76",
 		"@sveltejs/kit": "next",
+		"prettier": "^2.6.2",
+		"prettier-plugin-svelte": "^2.7.0",
 		"dexie": "^3.2.2",
 		"ipfs-core": "^0.16.0",
 		"node-fetch": "^3.2.10",

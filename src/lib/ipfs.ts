@@ -8,6 +8,6 @@ export let ipfs: IPFS | undefined;
 		ipfs = await create({
 			repo: "spotifds", //String(Math.random() + Date.now()),
 			init: { algorithm: "Ed25519" },
-			start: browser,
+			start: browser
 		});
 })();

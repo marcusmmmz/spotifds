@@ -16,10 +16,10 @@
 		let file = await ipfs.add(
 			{
 				path,
-				content,
+				content
 			},
 			{
-				pin: true,
+				pin: true
 			}
 		);
 
@@ -28,7 +28,7 @@
 		db.songs.add({
 			title,
 			author,
-			cid: file.cid.toString(),
+			cid: file.cid.toString()
 		});
 
 		title = "";

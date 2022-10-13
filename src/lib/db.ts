@@ -32,14 +32,14 @@ export class MyDexie extends Dexie {
 		this.version(3).stores({
 			songs: "++id, title, author, cid, duration",
 			playlists: "++id, title",
-			playlistSongs: "[playlistId+songId], songId, playlistId, index",
+			playlistSongs: "[playlistId+songId], songId, playlistId, index"
 		});
 
 		this.on("populate", async () => {
 			await this.songs.add({
 				title: "Billie Jean",
 				author: "Michael Jackson",
-				cid: "QmVqUWigstymTeWgf6YcEecE6HXiAUsoAZ9aLEE77qcVnH",
+				cid: "QmVqUWigstymTeWgf6YcEecE6HXiAUsoAZ9aLEE77qcVnH"
 			});
 		});
 	}
