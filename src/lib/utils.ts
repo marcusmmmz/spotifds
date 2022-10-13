@@ -58,3 +58,16 @@ export function defineContext<T>(): [() => T, (service: T) => T] {
 
 	return [() => getContext<T>(key), (service: T) => setContext(key, service)];
 }
+
+export function calculateTime(secs?: number) {
+	if (secs == undefined) return "--:--";
+
+	const minutes = Math.floor(secs / 60);
+	const seconds = Math.floor(secs % 60);
+	const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+	return `${minutes}:${returnedSeconds}`;
+}
+
+export function filterUndefined<T>(arr: (T | undefined)[]) {
+	return arr.filter((item) => item) as T[];
+}

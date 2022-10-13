@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { createMenuStore } from '$lib/ContextMenu/ContextMenu.svelte';
-	import { db, type ISong } from '$lib/db';
-	import { currentlyPlayingSong, isPaused } from '$lib/stores';
-	import { useLiveQuery } from '$lib/utils';
-	import EditSongModal from './EditSongModal.svelte';
-	import SongContextMenu from './SongContextMenu.svelte';
-	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { useContextMenu } from "$lib/ContextMenu/ContextMenu.svelte";
+	import { db, type ISong } from "$lib/db";
+	import { currentlyPlayingSong, isPaused } from "$lib/stores";
+	import { calculateTime, useLiveQuery } from "$lib/utils";
+	import SongContextMenu from "$lib/SongContextMenu.svelte";
+	import { onMount } from "svelte";
 
 	let songs: ISong[];
 	let uploadedSongs = useLiveQuery(() => db.songs.toArray(), []);
@@ -16,51 +14,12 @@
 		$isPaused = false;
 	}
 
-	let songMenuStore = createMenuStore();
+	let songMenuStore = useContextMenu();
 
 	let selectedSongID: number | undefined;
 
-	let showEditModal = false;
-
-	async function shareSong() {
-		if (!selectedSongID) return;
-
-		let song = await db.songs.get(selectedSongID);
-
-		if (!song) return;
-
-		let params = new URLSearchParams();
-
-		params.set('title', song.title);
-		params.set('author', song.author);
-		params.set('cid', song.cid);
-		if (song.duration) {
-			params.set('duration', song.duration.toString());
-		}
-
-		let shareUrl = `${$page.url.href}share?${params}`;
-
-		navigator.clipboard.writeText(shareUrl);
-
-		alert(
-			`A sharing link to "${song.title} - ${song.author}" was copied to your clipboard`
-		);
-	}
-
-	const calculateTime = (secs?: number) => {
-		if (!secs) return '--:--';
-
-		const minutes = Math.floor(secs / 60);
-		const seconds = Math.floor(secs % 60);
-		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-		return `${minutes}:${returnedSeconds}`;
-	};
-
-	let songsContainerEl: HTMLElement;
-
 	onMount(async () => {
-
-		let audio = document.createElement('audio');
+		let audio = document.createElement("audio");
 		songs = await db.songs.toArray();
 
 		let index = -1;
@@ -88,25 +47,15 @@
 	});
 </script>
 
-<EditSongModal bind:visible={showEditModal} bind:songId={selectedSongID} />
-
-<SongContextMenu
-	bind:store={songMenuStore}
-	on:delete={() => {
-		if (!selectedSongID) return;
-
-		db.songs.delete(selectedSongID);
-	}}
-	on:edit={() => (showEditModal = true)}
-	on:share={shareSong}
-/>
+<SongContextMenu bind:store={songMenuStore} bind:songId={selectedSongID} />
 
 <h2>Uploaded Songs</h2>
-<div class="container" bind:this={songsContainerEl}>
+<div class="container">
 	<ul>
 		{#if $uploadedSongs}
 			{#each $uploadedSongs as song}
-				<div class="song"
+				<div
+					class="song"
 					on:click={() => playSong(song)}
 					on:contextmenu={(e) => {
 						songMenuStore.open(e);
@@ -114,7 +63,12 @@
 					}}
 				>
 					<div class="image">
-						<img src={song.cid == $currentlyPlayingSong?.cid ? "play.svg" : "quavers-pair.svg"} alt="back">
+						<img
+							src={song.cid == $currentlyPlayingSong?.cid
+								? "play.svg"
+								: "quavers-pair.svg"}
+							alt="back"
+						/>
 					</div>
 					<div class="title">
 						<h2>{song.title}</h2>
@@ -135,7 +89,7 @@
 	ul {
 		padding-left: 0;
 	}
-	
+
 	.song {
 		background-color: var(--primary-background-color);
 		margin-bottom: 5px;
@@ -175,10 +129,10 @@
 	.title {
 		grid-area: title;
 		height: 100%;
-		width: calc(100% - 10px); 
-		white-space: nowrap; 
+		width: calc(100% - 10px);
+		white-space: nowrap;
 		overflow: hidden;
-		text-overflow: ellipsis; 
+		text-overflow: ellipsis;
 		align-self: center;
 	}
 
@@ -186,7 +140,7 @@
 		font-size: 30px;
 		margin-right: 10px;
 		margin-top: 8px;
-		text-overflow: ellipsis; 
+		text-overflow: ellipsis;
 	}
 
 	.author {

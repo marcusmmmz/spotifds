@@ -2,7 +2,7 @@
 	import { db } from "$lib/db";
 	import { currentlyPlayingSong, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
-	import { useLocalStorageStore } from "$lib/utils";
+	import { calculateTime, useLocalStorageStore } from "$lib/utils";
 
 	let volume = useLocalStorageStore("volume", 50);
 
@@ -29,13 +29,6 @@
 
 	$: if (progressBarEl) progressBarEl.max = duration.toString();
 	$: progressBarEl?.style?.setProperty("--max", duration.toString());
-
-	const calculateTime = (secs: number) => {
-		const minutes = Math.floor(secs / 60);
-		const seconds = Math.floor(secs % 60);
-		const returnedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
-		return `${minutes}:${returnedSeconds}`;
-	};
 
 	async function playNextSong() {
 		let nextSong = await db.songs
@@ -112,7 +105,7 @@
 			<img style="transform: scale(0.75)" src="next.svg" alt="next" />
 		</button>
 		<p>
-			{calculateTime(duration || 0)}
+			{calculateTime(duration)}
 		</p>
 	</div>
 	<input
@@ -285,7 +278,8 @@
 
 	.progressBar::-webkit-slider-runnable-track,
 	.volumeBar::-webkit-slider-runnable-track {
-		background: var(--range-gradient) 0 / var(--sx) 100% no-repeat, var(--range-background-color);
+		background: var(--range-gradient) 0 / var(--sx) 100% no-repeat,
+			var(--range-background-color);
 		width: 100%;
 		height: 10px;
 		cursor: pointer;

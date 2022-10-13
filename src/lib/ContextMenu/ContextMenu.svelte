@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { writable } from "svelte/store";
 
-	export function createMenuStore() {
+	export function useContextMenu() {
 		let store = writable({
 			pos: { x: 0, y: 0 },
 			showMenu: false,
@@ -45,7 +45,7 @@
 		};
 	}
 
-	export type MenuStore = ReturnType<typeof createMenuStore>;
+	export type MenuStore = ReturnType<typeof useContextMenu>;
 
 	import { defineContext } from "$lib/utils";
 
