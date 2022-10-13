@@ -69,19 +69,11 @@
 		<h2>Upload a music file</h2>
 		<form on:submit|preventDefault={onSubmit}>
 			<div class="group">
-				<input
-					required
-					type="text"
-					bind:value={title}
-				>
+				<input required type="text" bind:value={title} />
 				<p>Title</p>
 			</div>
 			<div class="group">
-				<input
-					required
-					type="text"
-					bind:value={author}
-				/>
+				<input required type="text" bind:value={author} />
 				<p>Author</p>
 			</div>
 			<button class="button" disabled={file != undefined} type="button">
@@ -89,7 +81,13 @@
 					{fileName == "" ? "Select music file" : `${fileName} selected`}
 				</label>
 			</button>
-			<input hidden id="file-upload" type="file" accept="*" on:change={onFileSelected} />
+			<input
+				hidden
+				id="file-upload"
+				type="file"
+				accept="*"
+				on:change={onFileSelected}
+			/>
 			{#if file}
 				<button class="button" type="submit">Upload</button>
 			{/if}
@@ -112,6 +110,7 @@
 		background-color: var(--secondary-background-color);
 		width: 90%;
 		padding: 2% 2%;
+		margin: 25px;
 	}
 
 	form {

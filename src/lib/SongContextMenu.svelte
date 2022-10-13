@@ -3,15 +3,21 @@
 	import type { MenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
 	import MenuDivider from "$lib/ContextMenu/MenuDivider.svelte";
 	import MenuOption from "$lib/ContextMenu/MenuOption.svelte";
-	import { db, type ISong } from "./db";
-	import EditSongModal from "./EditSongModal.svelte";
+	import { createEventDispatcher } from "svelte";
+	import { db, type ISong } from "$lib/db";
+	import EditSongModal from "$lib/EditSongModal.svelte";
 	import { page } from "$app/stores";
+	import AddToPlaylistModal from "$lib/AddToPlaylistModal.svelte";
 
 	export let store: MenuStore;
 
 	export let songId: ISong["id"];
 
+	const dispatch = createEventDispatcher();
+
 	let showEditModal = false;
+
+	let showAddToPlaylistModal = false;
 
 	async function share() {
 		if (!songId) return;
@@ -39,6 +45,7 @@
 	}
 </script>
 
+<AddToPlaylistModal bind:visible={showAddToPlaylistModal} bind:songId />
 <EditSongModal bind:songId bind:visible={showEditModal} />
 
 <ContextMenu bind:store>
@@ -48,11 +55,12 @@
 			if (!songId) return;
 
 			db.songs.delete(songId);
-		}}
+		}}>🗑️ Delete</MenuOption
 	>
-		🗑️ Delete
-	</MenuOption>
 	<MenuDivider />
 	<MenuOption on:click={share}>📡 Share</MenuOption>
-	<slot />
+	<MenuOption on:click={() => (showAddToPlaylistModal = true)}
+		>➕ Add to playlist</MenuOption
+	>
+	<slot {dispatch} />
 </ContextMenu>

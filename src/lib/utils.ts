@@ -15,6 +15,8 @@ export function useLiveQuery<T extends any>(
 		subscribe(callback: (value: T) => any) {
 			const { unsubscribe } = _liveQuery.subscribe(callback);
 
+			callback(defaultValue);
+
 			return unsubscribe;
 		},
 	};

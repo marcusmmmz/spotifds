@@ -34,7 +34,10 @@
 		padding-right: 25px;
 		grid-area: main;
 		background-color: var(--primary-foreground-color);
-		background-image: linear-gradient(var(--primary-foreground-color) 0%, var(--secondary-foreground-color) 100%);
+		background-image: linear-gradient(
+			var(--primary-foreground-color) 0%,
+			var(--secondary-foreground-color) 100%
+		);
 		overflow: scroll;
 		overflow-x: hidden;
 	}

@@ -14,5 +14,5 @@
 	<MenuOption on:click={() => dispatch("edit")}>📝 Edit</MenuOption>
 	<MenuOption on:click={() => dispatch("delete")}>🗑️ Delete</MenuOption>
 	<MenuDivider />
-	<MenuOption on:click={() => dispatch("share")}>📡 Share</MenuOption>
+	<MenuOption disabled on:click={() => dispatch("share")}>📡 Share</MenuOption>
 </ContextMenu>

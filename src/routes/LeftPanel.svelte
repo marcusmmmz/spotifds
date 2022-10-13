@@ -1,7 +1,15 @@
+<script>
+	import MenuDivider from "$lib/ContextMenu/MenuDivider.svelte";
+	import MenuPlaylists from "./MenuPlaylists.svelte";
+</script>
+
 <div class="left">
 	<div class="menuSelector">
 		<a href="/">All songs</a>
 		<a href="/manage">Manage</a>
+		<hr />
+
+		<MenuPlaylists />
 	</div>
 </div>
 
@@ -21,30 +29,30 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		margin-left: 10px;
+	}
+	hr {
+		border: 0;
+		border-top: 1px solid var(--accent-color);
+		border-bottom: 1px solid var(--accent-color);
+		width: 100%;
 	}
 
-	.menuSelector a {
+	* :global(a) {
 		text-decoration: none;
 		font-size: 22px;
 		color: #ffffff;
 		transition: 0.3s;
-		padding-bottom: 10px;
+		padding: 5px 0;
+		margin-left: 10px;
 	}
 
-	.menuSelector a:hover {
+	* :global(a):hover {
 		transition: 0.3s;
 		padding-left: 10px;
 	}
 
-
-	.menuSelector a:active {
-		/* color: var(--yellow); */
+	* :global(a):active {
 		position: relative;
 		top: 2px;
-		transition: 0s;
-		/* text-shadow: 0 0 3px var(--yellow), 0 0 5px var(--yellow), 0 0 8px var(--yellow),
-			0 0 18px var(--orange), 0 0 30px var(--orange), 0 0 34px var(--orange),
-			0 0 40px var(--orange), 0 0 65px var(--orange); */
 	}
 </style>

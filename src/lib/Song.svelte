@@ -1,11 +1,15 @@
 <script lang="ts">
-	import type { ISong } from "./db";
-	import { currentlyPlayingSong } from "./stores";
+	import type { IPlaylist, ISong } from "./db";
+	import { currentlyPlayingSong, currentPlaylist } from "./stores";
 	import { calculateTime } from "$lib/utils";
 
 	export let song: ISong;
 
-	$: isCurrentlyPlaying = song.cid == $currentlyPlayingSong?.cid;
+	export let playlistId: IPlaylist["id"];
+
+	$: isCurrentlyPlaying =
+		song.cid == $currentlyPlayingSong?.cid &&
+		playlistId == $currentPlaylist?.id;
 </script>
 
 <div class="song" on:click on:contextmenu>

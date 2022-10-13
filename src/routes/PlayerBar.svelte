@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { db } from "$lib/db";
-	import { currentlyPlayingSong, isPaused } from "$lib/stores";
+	import { db, type IPlaylistSong, type ISong } from "$lib/db";
+	import { currentlyPlayingSong, currentPlaylist, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
-	import { calculateTime, useLocalStorageStore } from "$lib/utils";
+	import {
+		calculateTime,
+		useLiveQuery,
+		useLocalStorageStore,
+	} from "$lib/utils";
 
 	let volume = useLocalStorageStore("volume", 50);
 
@@ -30,7 +34,70 @@
 	$: if (progressBarEl) progressBarEl.max = duration.toString();
 	$: progressBarEl?.style?.setProperty("--max", duration.toString());
 
+	let allPlaylistSongs: IPlaylistSong[];
+	$: if ($currentPlaylist?.id != undefined)
+		updateSongsInPlaylist($currentPlaylist.id);
+
+	$: currentPlaylistSong = useLiveQuery(
+		() =>
+			db.playlistSongs.get({
+				songId: $currentlyPlayingSong?.id,
+				playlistId: $currentPlaylist?.id,
+			}),
+		undefined
+	);
+
+	async function updateSongsInPlaylist(currentPlaylistId: number) {
+		allPlaylistSongs = await db.playlistSongs
+			.where("playlistId")
+			.equals(currentPlaylistId)
+			.toArray();
+	}
+
+	function getHighestSongIndex(songsInPlaylist: IPlaylistSong[]) {
+		return songsInPlaylist.reduce((pv, cv) => (cv.index > pv.index ? cv : pv));
+	}
+
+	function getLowestSongIndex(songsInPlaylist: IPlaylistSong[]) {
+		return songsInPlaylist.reduce((pv, cv) => (cv.index < pv.index ? cv : pv));
+	}
+
+	async function playSong(song: ISong) {
+		$currentlyPlayingSong = song;
+		$isPaused = false;
+	}
+
+	async function playNextPlaylistSong() {
+		if (!$currentPlaylistSong) return;
+
+		let nextPlaylistSong: IPlaylistSong | undefined;
+
+		if (allPlaylistSongs.length !== 0) {
+			let currentPlaylistSongIndex = $currentPlaylistSong.index;
+
+			let nextPlaylistSongs = allPlaylistSongs.filter(
+				(playlistSong) => playlistSong.index > currentPlaylistSongIndex
+			);
+
+			if (nextPlaylistSongs.length == 0) {
+				nextPlaylistSong = getLowestSongIndex(allPlaylistSongs);
+			} else {
+				nextPlaylistSong = getLowestSongIndex(nextPlaylistSongs);
+			}
+		}
+
+		if (!nextPlaylistSong?.songId) return;
+
+		let nextSong = await db.songs.get(nextPlaylistSong.songId);
+
+		if (!nextSong) return;
+
+		playSong(nextSong);
+	}
+
 	async function playNextSong() {
+		if ($currentPlaylist != null) return playNextPlaylistSong();
+
 		let nextSong = await db.songs
 			.where("id")
 			.above($currentlyPlayingSong?.id)
@@ -40,11 +107,40 @@
 
 		if (!nextSong) return;
 
-		$currentlyPlayingSong = nextSong;
-		$isPaused = false;
+		playSong(nextSong);
+	}
+
+	async function playPreviousPlaylistSong() {
+		if (!$currentPlaylistSong) return;
+
+		let previousPlaylistSong: IPlaylistSong | undefined;
+
+		if (allPlaylistSongs.length !== 0) {
+			let currentPlaylistSongIndex = $currentPlaylistSong.index;
+
+			let nextPlaylistSongs = allPlaylistSongs.filter(
+				(playlistSong) => playlistSong.index < currentPlaylistSongIndex
+			);
+
+			if (nextPlaylistSongs.length == 0) {
+				previousPlaylistSong = getHighestSongIndex(allPlaylistSongs);
+			} else {
+				previousPlaylistSong = getHighestSongIndex(nextPlaylistSongs);
+			}
+		}
+
+		if (!previousPlaylistSong?.songId) return;
+
+		let nextSong = await db.songs.get(previousPlaylistSong.songId);
+
+		if (!nextSong) return;
+
+		playSong(nextSong);
 	}
 
 	async function playPreviousSong() {
+		if ($currentPlaylist != null) return playPreviousPlaylistSong();
+
 		let previousSong = await db.songs
 			.where("id")
 			.below($currentlyPlayingSong?.id)
@@ -54,8 +150,7 @@
 
 		if (!previousSong) return;
 
-		$currentlyPlayingSong = previousSong;
-		$isPaused = false;
+		playSong(previousSong);
 	}
 </script>
 
@@ -92,17 +187,17 @@
 	<div class="time-and-pause-container">
 		<p>{calculateTime(currentTime)}</p>
 		<button on:click={playPreviousSong}>
-			<img style="transform: scale(0.75)" src="previous.svg" alt="back" />
+			<img style="transform: scale(0.75)" src="/previous.svg" alt="back" />
 		</button>
 		<button on:click={() => ($isPaused ? audio.play() : audio.pause())}>
 			<img
 				class="svg"
-				src={$isPaused ? "play.svg" : "pause.svg"}
+				src={$isPaused ? "/play.svg" : "/pause.svg"}
 				alt="pause/unpause"
 			/>
 		</button>
 		<button on:click={playNextSong}>
-			<img style="transform: scale(0.75)" src="next.svg" alt="next" />
+			<img style="transform: scale(0.75)" src="/next.svg" alt="next" />
 		</button>
 		<p>
 			{calculateTime(duration)}
