@@ -35,7 +35,7 @@
 			params.set("duration", song.duration.toString());
 		}
 
-		let shareUrl = `${$page.url.href}share?${params}`;
+		let shareUrl = `${$page.url.origin}/share?${params}`;
 
 		navigator.clipboard.writeText(shareUrl);
 
@@ -43,6 +43,8 @@
 			`A sharing link to "${song.title} - ${song.author}" was copied to your clipboard`
 		);
 	}
+
+	$: console.log($page.url);
 </script>
 
 <AddToPlaylistModal bind:visible={showAddToPlaylistModal} bind:songId />
