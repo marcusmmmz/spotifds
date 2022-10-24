@@ -15,11 +15,11 @@
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/adapter-vercel": "1.0.0-next.76",
 		"@sveltejs/kit": "next",
-		"prettier": "^2.6.2",
-		"prettier-plugin-svelte": "^2.7.0",
 		"dexie": "^3.2.2",
 		"ipfs-core": "^0.16.0",
 		"node-fetch": "^3.2.10",
+		"prettier": "^2.6.2",
+		"prettier-plugin-svelte": "^2.7.0",
 		"svelte": "^3.44.0",
 		"svelte-check": "^2.7.1",
 		"svelte-preprocess": "^4.10.6",
@@ -28,5 +28,8 @@
 		"undici": "^5.10.0",
 		"vite": "^3.1.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"multiformats": "^9"
+	}
 }

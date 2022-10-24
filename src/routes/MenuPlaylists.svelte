@@ -1,34 +1,18 @@
 <script lang="ts">
 	import { useContextMenu } from "$lib/ContextMenu/ContextMenu.svelte";
-	import { db } from "$lib/db";
+	import { db, type IPlaylist } from "$lib/db";
 	import { currentPlaylist } from "$lib/stores";
 	import { useLiveQuery } from "$lib/utils";
-	import EditPlaylistModal from "./EditPlaylistModal.svelte";
 	import PlaylistContextMenu from "./PlaylistContextMenu.svelte";
 
 	let playlists = useLiveQuery(() => db.playlists.toArray(), []);
 
 	let playlistMenuStore = useContextMenu();
 
-	let selectedPlaylistID: number | undefined;
-
-	let showEditModal = false;
+	let selectedPlaylistID: IPlaylist["id"];
 </script>
 
-<PlaylistContextMenu
-	bind:store={playlistMenuStore}
-	on:edit={() => (showEditModal = true)}
-	on:delete={() => {
-		if (!selectedPlaylistID) return;
-
-		db.playlists.delete(selectedPlaylistID);
-	}}
-/>
-
-<EditPlaylistModal
-	bind:visible={showEditModal}
-	bind:playlistId={selectedPlaylistID}
-/>
+<PlaylistContextMenu {selectedPlaylistID} bind:store={playlistMenuStore} />
 
 {#each $playlists as playlist}
 	<div
