@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ContextMenu from "$lib/ContextMenu/ContextMenu.svelte";
-	import type { MenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
+	import type { ContextMenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
 	import MenuDivider from "$lib/ContextMenu/MenuDivider.svelte";
 	import MenuOption from "$lib/ContextMenu/MenuOption.svelte";
 	import { createEventDispatcher } from "svelte";
@@ -9,7 +9,7 @@
 	import { page } from "$app/stores";
 	import AddToPlaylistModal from "$lib/AddToPlaylistModal.svelte";
 
-	export let store: MenuStore;
+	export let store: ContextMenuStore;
 
 	export let songId: ISong["id"];
 
@@ -43,8 +43,6 @@
 			`A sharing link to "${song.title} - ${song.author}" was copied to your clipboard`
 		);
 	}
-
-	$: console.log($page.url);
 </script>
 
 <AddToPlaylistModal bind:visible={showAddToPlaylistModal} bind:songId />

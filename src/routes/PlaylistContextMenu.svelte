@@ -1,24 +1,22 @@
 <script lang="ts">
 	import ContextMenu from "$lib/ContextMenu/ContextMenu.svelte";
-	import type { MenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
+	import type { ContextMenuStore } from "$lib/ContextMenu/ContextMenu.svelte";
 	import MenuDivider from "$lib/ContextMenu/MenuDivider.svelte";
 	import MenuOption from "$lib/ContextMenu/MenuOption.svelte";
 	import { page } from "$app/stores";
 	import { ipfs } from "$lib/ipfs";
-	import { db, type IPlaylist, type ISong } from "$lib/db";
+	import { db, type IPlaylist } from "$lib/db";
 	import { filterUndefined } from "$lib/utils";
 	import EditPlaylistModal from "./EditPlaylistModal.svelte";
 	import type { ISharedPlaylist } from "$lib/types";
 
 	export let selectedPlaylistID: IPlaylist["id"];
 
-	export let store: MenuStore;
+	export let store: ContextMenuStore;
 
 	let showEditModal = false;
 
 	async function share() {
-		console.log(ipfs);
-
 		if (!ipfs) return;
 
 		if (!selectedPlaylistID) return;

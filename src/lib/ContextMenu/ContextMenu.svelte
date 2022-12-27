@@ -1,11 +1,17 @@
 <script lang="ts" context="module">
 	import { writable } from "svelte/store";
 
+	let currentlyOpenContextMenu: ContextMenuStore | null;
+
 	export function useContextMenu() {
-		let store = writable({
-			pos: { x: 0, y: 0 },
-			showMenu: false
-		});
+		let store = {
+			...writable({
+				pos: { x: 0, y: 0 },
+				showMenu: false
+			}),
+			open,
+			close
+		};
 
 		function open(e: MouseEvent) {
 			e.preventDefault();
@@ -13,39 +19,28 @@
 
 			const pos = { x: e.clientX, y: e.clientY };
 
-			store.update(() => {
-				// For when you right click again
-				setTimeout(
-					() =>
-						store.update(() => ({
-							pos,
-							showMenu: true
-						})),
-					100
-				);
+			currentlyOpenContextMenu?.close();
 
-				return {
+			setTimeout(() => {
+				store.set({
 					pos,
-					showMenu: false
-				};
-			});
+					showMenu: true
+				});
+				currentlyOpenContextMenu = store;
+			}, 100);
 		}
 
 		function close() {
-			store.update((value) => {
-				value.showMenu = false;
-				return value;
-			});
+			store.update((value) => ({
+				...value,
+				showMenu: false
+			}));
 		}
 
-		return {
-			...store,
-			open,
-			close
-		};
+		return store;
 	}
 
-	export type MenuStore = ReturnType<typeof useContextMenu>;
+	export type ContextMenuStore = ReturnType<typeof useContextMenu>;
 
 	import { defineContext } from "$lib/utils";
 
@@ -60,7 +55,7 @@
 
 	let menu: HTMLDivElement;
 
-	export let store: MenuStore;
+	export let store: ContextMenuStore;
 
 	$: x = $store.pos.x;
 	$: y = $store.pos.y;
@@ -85,15 +80,11 @@
 		if (y > window.innerHeight - rect.height) y -= rect.height;
 	}
 
-	function onPageClick(
-		e: MouseEvent & {
-			target: EventTarget & HTMLElement;
-		}
-	) {
+	function onPageClick(e: MouseEvent) {
 		// Menu is closed
 		if (menu == null) return;
 
-		if (e.target === menu || menu.contains(e.target)) return;
+		if (e.target === menu || menu.contains(e.target as Node)) return;
 		dispatch("clickoutside");
 
 		store.close();
