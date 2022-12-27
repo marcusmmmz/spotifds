@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
-	import { db } from "$lib/db";
+	import { db, type ISong } from "$lib/db";
 	import { ipfs } from "$lib/ipfs";
 	import type { ISharedPlaylist } from "$lib/types";
 
@@ -21,26 +21,52 @@
 			await fetch(`https://ipfs.io/api/v0/dag/get?arg=${cid}`)
 		).json();
 
+		// songs that are already stored locally
+		let oldSongs = await db.songs
+			.where("cid")
+			.anyOf(sharedPlaylist.songs.map((song) => song.cid))
+			.toArray();
+
+		let newSongs: ISong[] = sharedPlaylist.songs.filter(
+			(song) => !oldSongs.map((v) => v.cid).includes(song.cid)
+		);
+
+		let newSongIds = await db.songs.bulkAdd(newSongs, {
+			allKeys: true
+		});
+
+		newSongs = newSongIds.map((id, i) => ({
+			...newSongs[i],
+			id
+		}));
+
+		// this remapping is for maintaining the songs order
+		let allSongs: ISong[] = sharedPlaylist.songs.map((song) => {
+			let id = oldSongs.find((v) => v.cid == song.cid)?.id;
+
+			if (!id) id = newSongs.find((v) => v.cid == song.cid)?.id;
+
+			return {
+				...song,
+				id
+			};
+		});
+
 		let playlistId = await db.playlists.add({
 			title
 		});
 
-		let songs = (
-			await db.songs.bulkAdd(sharedPlaylist.songs, {
-				allKeys: true
-			})
-		).map((id, i) => ({
-			...sharedPlaylist.songs[i],
-			id
-		}));
-
 		let index = 0;
 		await db.playlistSongs.bulkAdd(
-			songs.map((song) => ({ playlistId, songId: song.id, index: index++ }))
+			allSongs.map((song) => ({
+				playlistId,
+				songId: song.id,
+				index: index++
+			}))
 		);
 
 		ipfs?.addAll(
-			songs.map((song) => song.cid),
+			newSongs.map((song) => song.cid),
 			{
 				pin: true
 			}
