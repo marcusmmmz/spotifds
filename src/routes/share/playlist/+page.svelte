@@ -15,11 +15,11 @@
 	async function addPlaylist() {
 		if (!cid) return;
 
+		disableButton = true;
+
 		let sharedPlaylist: ISharedPlaylist = await (
 			await fetch(`https://ipfs.io/api/v0/dag/get?arg=${cid}`)
 		).json();
-
-		disableButton = true;
 
 		let playlistId = await db.playlists.add({
 			title
