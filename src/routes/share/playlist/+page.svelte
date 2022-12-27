@@ -27,19 +27,14 @@
 			await db.songs.bulkAdd(sharedPlaylist.songs, {
 				allKeys: true
 			})
-		).map((id, index) => ({
-			...sharedPlaylist.songs[index],
+		).map((id, i) => ({
+			...sharedPlaylist.songs[i],
 			id
 		}));
 
-		let playlistLength = await db.playlistSongs
-			.where("playlistId")
-			.equals(playlistId as number)
-			.count();
-
-		let index = playlistLength - 1;
+		let index = 0;
 		await db.playlistSongs.bulkAdd(
-			songs.map((song) => ({ playlistId, songId: song.id, index }))
+			songs.map((song) => ({ playlistId, songId: song.id, index: index++ }))
 		);
 
 		ipfs?.addAll(
