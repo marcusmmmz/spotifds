@@ -10,6 +10,8 @@
 	$: title = params.get("title") ?? "unknown";
 	$: cid = params.get("cid");
 
+	let disableButton = false;
+
 	async function addPlaylist() {
 		if (!cid) return;
 
@@ -17,7 +19,7 @@
 			await fetch(`https://ipfs.io/api/v0/dag/get?arg=${cid}`)
 		).json();
 
-		if (!sharedPlaylist) return;
+		disableButton = true;
 
 		let playlistId = await db.playlists.add({
 			title
@@ -55,7 +57,9 @@
 		<h3>
 			{title}
 		</h3>
-		<button class="button" on:click={addPlaylist}>Add Playlist</button>
+		<button class="button" disabled={disableButton} on:click={addPlaylist}>
+			{disableButton ? "Adding playlist..." : "Add playlist"}
+		</button>
 	</div>
 </div>
 

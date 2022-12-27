@@ -10,8 +10,12 @@
 	$: author = params.get("author") ?? "unknown";
 	$: cid = params.get("cid");
 
+	let disableButton = false;
+
 	async function addSong() {
 		if (!cid) return;
+
+		disableButton = true;
 
 		await ipfs?.pin.add(cid);
 
@@ -31,7 +35,9 @@
 		<h3>
 			{title} - {author}
 		</h3>
-		<button class="button" on:click={addSong}>Add song</button>
+		<button class="button" disabled={disableButton} on:click={addSong}>
+			{disableButton ? "Adding song..." : "Add song"}
+		</button>
 	</div>
 </div>
 
@@ -54,9 +60,5 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
-
-	button {
-		/* width: 30%; */
 	}
 </style>

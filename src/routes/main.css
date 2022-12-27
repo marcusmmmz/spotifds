@@ -31,6 +31,7 @@ body {
 
 	--accent-color: var(--pink);
 	--hover-color: var(--low-pink);
+	--disabled-color: gray;
 }
 
 .button {
@@ -48,6 +49,10 @@ body {
 
 .button:active {
 	background-color: var(--orange);
+}
+
+.button:disabled {
+	background-color: var(--disabled-color);
 }
 
 .group {
