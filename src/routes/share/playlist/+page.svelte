@@ -77,6 +77,15 @@
 	}
 </script>
 
+<svelte:head>
+	<meta name="title" content={`The playlist "${title}" was shared with you`} />
+	<meta
+		name="description"
+		content="Come listen to it at spotifds, a peer-to-peer music player built on IPFS."
+	/>
+	<meta name="theme-color" content="#5e4581" />
+</svelte:head>
+
 <h2>Do you want to add this playlist to your library?</h2>
 <div class="container">
 	<div class="add-playlist-container">
