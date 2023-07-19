@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { db, type IPlaylistSong, type ISong } from "$lib/db";
+	import { ipfs } from "$lib/ipfs";
 	import { currentlyPlayingSong, currentPlaylist, isPaused } from "$lib/stores";
 	import { currentlyPlayingSong as song } from "$lib/stores";
 	import {
@@ -17,6 +18,8 @@
 	let progressBarEl: HTMLInputElement;
 	let volumeBarEl: HTMLInputElement;
 
+	let songBlob: Blob | undefined;
+
 	$: if (audio) audio.volume = $volume / 100;
 
 	$: if (audio && !$isPaused && $currentlyPlayingSong != null) {
@@ -27,6 +30,8 @@
 
 		audio.addEventListener("canplaythrough", cb);
 	}
+
+	$: songBlobUrl = songBlob ? URL.createObjectURL(songBlob) : undefined;
 
 	$: volumeBarEl?.style?.setProperty("--value", $volume.toString());
 	$: progressBarEl?.style?.setProperty("--value", currentTime.toString());
@@ -46,6 +51,32 @@
 			}),
 		undefined
 	);
+
+	async function loadSongFromGateway() {
+		if (!$song) return;
+
+		let res = await fetch(`https://ipfs.io/ipfs/${$song.cid}?filename=.mp3`);
+
+		return await res.blob();
+	}
+
+	async function loadSongFromNode() {
+		if (!$song || !ipfs) return;
+
+		let chunks: Uint8Array[] = [];
+
+		for await (const chunk of ipfs.cat($song.cid)) {
+			chunks.push(chunk);
+		}
+
+		return new Blob(chunks);
+	}
+
+	async function loadSong() {
+		songBlob = await Promise.any([loadSongFromNode(), loadSongFromGateway()]);
+	}
+
+	$: loadSong(), $song;
 
 	async function updateSongsInPlaylist(currentPlaylistId: number) {
 		allPlaylistSongs = await db.playlistSongs
@@ -178,7 +209,7 @@
 		}}
 		on:ended={playNextSong}
 		hidden
-		src={$song ? `https://ipfs.io/ipfs/${$song.cid}?filename=.mp3` : undefined}
+		src={songBlobUrl}
 	/>
 	<div class="music-name-container">
 		<h2>{$song?.title ?? "Nothing"}</h2>
